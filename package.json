@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Practice project: Learning backend with database",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,5 +12,9 @@
     "Moongoose"
   ],
   "author": "Aparneet Dey",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2"
+  }
 }
