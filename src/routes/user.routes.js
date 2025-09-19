@@ -19,13 +19,15 @@ router.route("/register").post(
     userRegister
 );
 
-router.route("/login").post(userLogIn);
+router.route("/login").post(
+    userLogIn
+);
 
 //secure routes
 router.route("/logout").post(
     verifyToken,
     userLogOut
-)
+);
 
 
 
