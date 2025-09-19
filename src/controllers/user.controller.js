@@ -238,10 +238,32 @@ const changeUserPassword = asyncHandler( async (req, res) => {
     )
 })
 
+const getCurrentUser = asyncHandler( async (req, res) => {
+    // Get the user -> db -> req
+    // return res
+
+    const currentUser = await User.findById(req.user._id).select("-password -refreshToken");
+
+    if(!currentUser) throw new ApiError(401, "Token is Expired or Used");
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                user: currentUser
+            },
+            "User Fetched Successfully"
+        )
+    )
+})
+
 export {
     userRegister,
     userLogIn,
     userLogOut,
     refreshAccessToken,
-    changeUserPassword
+    changeUserPassword,
+    getCurrentUser
 };
