@@ -30,7 +30,6 @@ const userSchema = new Schema(
         },
         coverImage: {
             type: String, //CLoudinary URL
-            required: true,
         },
         watchHistory: [
             {  
@@ -44,7 +43,6 @@ const userSchema = new Schema(
         },
         refreshToken: {
             type: String,
-            required: true,
         }
     },
     {

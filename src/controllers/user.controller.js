@@ -18,12 +18,9 @@ const userRegister = asyncHandler( async (req, res) => {
     // return res
 
     const {username, email, password, fullName} = req.body;
-    console.log(email)
 
     if (
-        [username, email, fullName, password].some((field) => {
-            return field==="";
-        })
+        [username, email, fullName, password].some((field) => field?.trim()==="" || !field)
     ) {
         throw new ApiError(400, "All fields are required")
     }
@@ -32,17 +29,24 @@ const userRegister = asyncHandler( async (req, res) => {
         $or: [{username}, {email}]
     });
 
-    if(existedUser) return ApiError(409, "User already exist");
+    if(existedUser) throw new ApiError(409, "User already exist");
 
-    const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPAth = req.files?.coverImage[0]?.path;
+    let avatarLocalPath;
+    let coverImageLocalPath;
 
-    if(!avatarLocalPath) return ApiError(400, "Avatar is required");
+    if(req.files && Array.isArray(req.files.avatar) && req.files.avatar.length > 0){
+        avatarLocalPath = req.files.avatar[0].path;
+    }
+    if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0){
+        coverImageLocalPath = req.files.coverImage[0].path;
+    }
+
+    if(!avatarLocalPath) throw new ApiError(400, "Avatar is required");
 
     const avatar = await uploadOnCloudinary(avatarLocalPath);
-    const coverImage = await uploadOnCloudinary(coverImageLocalPAth);
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
-    if(!avatar) return ApiError(400, "Avatar is required");
+    if(!avatar) throw new ApiError(400, "Avatar is required");
 
     const user = await User.create({
         username: username.toLowerCase(),
@@ -50,17 +54,18 @@ const userRegister = asyncHandler( async (req, res) => {
         fullName,
         password,
         avatar: avatar.url,
-        coverImage: coverImage?.url
+        coverImage: coverImage?.url || "",
+        refreshToken: ""
     })
 
     const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
     );
 
-    if(!createdUser) return ApiError(500, "Something went wrong while registering user");
+    if(!createdUser) throw new ApiError(500, "Something went wrong while registering user");
 
     res.status(201).json(
-        ApiResponse(200, createdUser, "User Registered Successfully")
+        new ApiResponse(200, createdUser, "User Registered Successfully")
     )
 
 
