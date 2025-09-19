@@ -133,12 +133,41 @@ const userLogIn = asyncHandler( async (req, res) => {
             {
                 user: loggedInUSer, accessToken, refreshToken
             },
-            "User logged in successfully"
+            "User Logged In successfully"
         )
+    )
+})
+
+const userLogOut = asyncHandler( async (req, res) => {
+    // Get user from middleware
+    // Clear refresh token
+    // Clear cookie
+    // return
+
+    await User.findByIdAndUpdate(req.user._id, {
+        $set: {
+            refreshToken: undefined,
+        }
+    }, {
+        new: true,
+    })
+
+    const cookieOptions = {
+        httpOnly: true,
+        secure: true
+    }
+
+    res
+    .status(200)
+    .clearCookie("accessToken", cookieOptions)
+    .clearCookie("refreshToken", cookieOptions)
+    .json(
+        new ApiResponse(200, {}, "User Logged Out")
     )
 })
 
 export {
     userRegister,
     userLogIn,
+    userLogOut
 };
