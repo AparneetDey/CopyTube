@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { changeUserPassword, getCurrentUser, refreshAccessToken, userDetailUpdate, userLogIn, userLogOut, userRegister } from "../controllers/user.controller.js";
-import {upload} from "../middlewares/multer.middleware.js"
+import { changeUserPassword, getCurrentUser, refreshAccessToken, userAvatarUpdate, userCoverImageUpdate, userDetailUpdate, userLogIn, userLogOut, userRegister } from "../controllers/user.controller.js";
+import { upload } from "../middlewares/multer.middleware.js"
 import { verifyToken } from "../middlewares/auth.middleware.js";
 
 const router = Router();
@@ -40,6 +40,30 @@ router.route("/update-user").post(
     verifyToken,
     userDetailUpdate
 );
+
+router.route("/update-avatar").post(
+    upload.fields([
+        {
+            name: "avatar",
+            maxCount: 1
+        }
+    ]),
+    verifyToken,
+    userAvatarUpdate
+);
+
+router.route("/update-cover-image").post(
+    upload.fields([
+        {
+            name: "coverImage",
+            maxCount: 1
+        }
+    ]),
+    verifyToken,
+    userCoverImageUpdate
+);
+
+
 
 router.route("/current-user").get(
     verifyToken,
