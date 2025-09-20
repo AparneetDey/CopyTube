@@ -327,21 +327,24 @@ const userCoverImageUpdate = asyncHandler( async (req, res) => {
 
     if(!coverImageLocalPath) throw new ApiError(400, "coverImage is Required");
 
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+    const newCoverImage = await uploadOnCloudinary(coverImageLocalPath);
 
-    if(!coverImage) throw new ApiError(500, "Something went wrong while uploading Cover Image on cloudinary");
+    if(!newCoverImage) throw new ApiError(500, "Something went wrong while uploading Cover Image on cloudinary");
 
-    const user = await User.findByIdAndUpdate(
-        req.user._id,
-        {
-            $set: {
-                coverImage: coverImage.url
-            }
-        },
-        {new: true}
-    ).select("-password -refreshToken");
+    const user = await User.findById(req.user._id).select("-password -refreshToken");
 
     if(!user) throw new ApiError(404, "User Not Found");
+
+    const previousCoverImageUrl = user.coverImage;
+
+    user.coverImage = newCoverImage;
+    await user.save({validateBeforeSave: false});
+
+    const deleteResponse = await deleteFromCloudinary(previousCoverImageUrl);
+
+    // console.log(deleteResponse);
+
+    if(!deleteResponse) throw new ApiError(501, "The previous Avatar is not Deleted from Cloudinary");
     
     res
     .status(201)
