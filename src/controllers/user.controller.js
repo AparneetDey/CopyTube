@@ -259,11 +259,40 @@ const getCurrentUser = asyncHandler( async (req, res) => {
     )
 })
 
+const userDetailUpdate = asyncHandler( async (req, res) => {
+    const {fullName} = req.body;
+
+    if (!fullName) throw new ApiError(400, "Fullname is Required");
+
+    const user = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                fullName
+            }
+        },
+        {new: true}
+    ).select("-password -refreshToken");
+
+    if(!user) throw new ApiError(404, "User Not Found");
+
+    res
+    .status(201)
+    .json(
+        new ApiResponse(
+            200,
+            user,
+            "Fullname Updated Successfully"
+        )
+    )
+})
+
 export {
     userRegister,
     userLogIn,
     userLogOut,
     refreshAccessToken,
     changeUserPassword,
-    getCurrentUser
+    getCurrentUser,
+    userDetailUpdate
 };
