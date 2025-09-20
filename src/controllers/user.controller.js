@@ -1,7 +1,7 @@
 import {asyncHandler} from "../utils/asyncHandler.js"
 import {ApiError} from "../utils/ApiError.js"
 import { User } from "../models/user.model.js"
-import { uploadOnCloudinary } from "../utils/cloudinary.js"
+import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import jwt from "jsonwebtoken"
 
@@ -292,21 +292,24 @@ const userAvatarUpdate = asyncHandler( async (req, res) => {
 
     if(!avatarLocalPath) throw new ApiError(400, "Avatar is Required");
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    const newAvatar = await uploadOnCloudinary(avatarLocalPath);
 
-    if(!avatar) throw new ApiError(500, "Something went wrong while uploading avatar on cloudinary");
+    if(!newAvatar) throw new ApiError(500, "Something went wrong while uploading avatar on cloudinary");
 
-    const user = await User.findByIdAndUpdate(
-        req.user._id,
-        {
-            $set: {
-                avatar: avatar?.url
-            }
-        },
-        {new: true}
-    ).select("-password -refreshToken");
+    const user = await User.findById(req.user._id).select("-password -refreshToken");
 
     if(!user) throw new ApiError(404, "User Not Found");
+
+    const previousAvatarUrl = user.avatar;
+
+    user.avatar = newAvatar;
+    await user.save({validateBeforeSave: false});
+
+    const deleteResponse = await deleteFromCloudinary(previousAvatarUrl);
+
+    console.log(deleteResponse);
+
+    if(!deleteResponse) throw new ApiError(501, "The previous Avatar is not Deleted from Cloudinary");
     
     res
     .status(201)

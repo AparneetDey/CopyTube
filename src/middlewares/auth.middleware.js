@@ -4,11 +4,13 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
 
 
-export const verifyToken = asyncHandler( async (req, res, next) => {
+export const verifyToken = asyncHandler( async (req, _, next) => {
+    if((!req.cookies || !req.cookies.accessToken) && !req.header("Authorization")) throw new ApiError(401, "Unauthorized Request");
+    
     try {
-        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+        const token = req.cookies.accessToken || req.header("Authorization").replace("Bearer ", "");
 
-        if(!token) throw new ApiError(401, "Unauthorized request");
+        if(!token) throw new ApiError(401, "Unauthorized Request");
 
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
@@ -22,6 +24,6 @@ export const verifyToken = asyncHandler( async (req, res, next) => {
 
     } catch (error) {
         console.log(error);
-        throw new ApiError(500, "Something went wrong while verifying token");
+        throw new ApiError(500, "Something went wrong while verifying token ");
     }
 })
