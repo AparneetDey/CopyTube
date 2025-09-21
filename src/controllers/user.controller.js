@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js"
 import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import jwt from "jsonwebtoken"
+import mongoose from "mongoose"
 
 
 const cookieOptions = {
@@ -357,6 +358,88 @@ const userCoverImageUpdate = asyncHandler( async (req, res) => {
     )
 })
 
+const getUserChannelProfile = asyncHandler( async (req, res) => {
+    const {username} = req.params;
+
+    if(!username?.trim()) throw new ApiError(400, "User name is Required");
+
+    const channel = await User.aggregate([
+        {
+            $match: {
+                username: username?.toLowerCase()
+            }
+        },
+        {
+            $lookup: {
+                from: "subscriptions",
+                localField: "_id",
+                foreignField: "channel",
+                as: "subscribers"
+            }
+        },
+        {
+            $lookup: {
+                from: "subscriptions",
+                localField: "_id",
+                foreignField: "subscriber",
+                as: "subscribedTo"
+            }
+        },
+        {
+            $addFields: {
+                subscribersCount: {
+                    $size: "$subscribers"
+                },
+                channelSubscribedToCount: {
+                    $size: "$subscribedTo"
+                },
+                isSubscribed: {
+                    $cond: {
+                        if: {$in: [req.user._id, "$subscribers.subscriber"] },
+                        then: true,
+                        else: false
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                username: 1,
+                fullName: 1,
+                email: 1,
+                avatar: 1,
+                coverImage: 1,
+                subscribersCount: 1,
+                channelSubscribedToCount: 1
+            }
+        }
+    ])
+
+    if(!channel?.length) throw new ApiError(400, "Channel not Found");
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                channel: channel[0]
+            },
+            "User Channel Fetched Successfully"
+        )
+    )
+})
+
+// const getUserWatchHistory = asyncHandler( async (req, res) => {
+//     const user = await User.aggregate([
+//         {
+//             $match: {
+//                 _id: new mongoose.Types.ObjectId(req.user?._id)
+//             }
+//         }
+//     ])
+// })
+
 export {
     userRegister,
     userLogIn,
@@ -366,5 +449,6 @@ export {
     getCurrentUser,
     userDetailUpdate,
     userAvatarUpdate,
-    userCoverImageUpdate
+    userCoverImageUpdate,
+    getUserChannelProfile
 };
