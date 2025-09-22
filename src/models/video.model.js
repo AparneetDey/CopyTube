@@ -17,7 +17,6 @@ const videoSchema = new Schema(
         },
         description: {
             type: String,
-            required: true,
         },
         owner: {
             type: Schema.Types.ObjectId,
@@ -29,7 +28,7 @@ const videoSchema = new Schema(
         },
         views: {
             type: Number,
-            required: true,
+            default: 0,
         },
         isPublished: {
             type: Boolean,

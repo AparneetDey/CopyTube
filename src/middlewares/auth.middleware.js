@@ -24,6 +24,6 @@ export const verifyToken = asyncHandler( async (req, _, next) => {
 
     } catch (error) {
         // console.log(error);
-        throw new ApiError(500, "Something went wrong while verifying token ");
+        throw new ApiError(500, "Something went wrong while verifying token :: User may not be logged in");
     }
 })
