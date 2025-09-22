@@ -307,7 +307,9 @@ const userAvatarUpdate = asyncHandler(async (req, res) => {
 
     const deleteResponse = await deleteFromCloudinary(previousAvatarUrl);
 
-    if (!deleteResponse) throw new ApiError(501, "The previous Avatar is not Deleted from Cloudinary");
+    if (!deleteResponse) {
+        console.log("The previous Avatar is not Deleted from Cloudinary")
+    }
 
     res
         .status(201)
@@ -340,9 +342,11 @@ const userCoverImageUpdate = asyncHandler(async (req, res) => {
 
     const deleteResponse = await deleteFromCloudinary(previousCoverImageUrl);
 
-    // console.log(deleteResponse);
+    console.log(deleteResponse);
 
-    if (!deleteResponse) throw new ApiError(501, "The previous Avatar is not Deleted from Cloudinary");
+    if (!deleteResponse) {
+        console.log("The previous Cover Image is not Deleted from Cloudinary");
+    }
 
     res
         .status(201)

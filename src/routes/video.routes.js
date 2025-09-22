@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyToken } from "../middlewares/auth.middleware.js";
-import { publishAVideo } from "../controllers/video.controller.js";
+import { deleteAVideo, publishAVideo } from "../controllers/video.controller.js";
 
 const router = Router();
 
@@ -21,5 +21,7 @@ router.route("/").post(
     ]),
     publishAVideo
 );
+
+router.route("/delete/:videoId").get(deleteAVideo);
 
 export default router;

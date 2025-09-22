@@ -21,8 +21,13 @@ const publishAVideo = asyncHandler( async (req, res) => {
 
     if(!title?.trim()) throw new ApiError(400, "Title is Required");
 
-    const videoLocalPath = req.files?.videoFile[0]?.path;
-    const thumbnailLocalPath = req.files?.thumbnail[0]?.path;
+    let videoLocalPath;
+    let thumbnailLocalPath;
+    
+    if(req.files && Array.isArray(req.files.videoFile) && Array.isArray(req.files.thumbnail) && req.files.videoFile.length > 0 && req.files.thumbnail.length > 0){
+        videoLocalPath = req.files.videoFile[0].path;
+        thumbnailLocalPath = req.files.thumbnail[0].path;
+    }
 
     if(!videoLocalPath || !thumbnailLocalPath) throw new ApiError(400, "Video and thumbnail is Required");
 
@@ -42,7 +47,7 @@ const publishAVideo = asyncHandler( async (req, res) => {
         title,
         description,
         owner: req.user?._id,
-        duration: video?.duration
+        duration: video?.duration.toFixed(2)
     });
 
     if(!uploadedVideo){
@@ -62,7 +67,54 @@ const publishAVideo = asyncHandler( async (req, res) => {
     )
 })
 
+const deleteAVideo = asyncHandler( async (req, res) => {
+    // Get video id from req.params
+    // Validate id
+    // Check if the video exists
+    // Check ownership
+    // Take the url of thumbnail and videoFile
+    // Delete the video document
+    // Check if the video doc is deleted
+    // Remove files from cloudinary
+    // Validate remove
+    // Return res
+
+    const { videoId } = req.params;
+
+    if(!videoId) throw new ApiError(400, "Video Id is Required");
+
+    const storedVideo =  await Video.findById(videoId);
+
+    if(!storedVideo) throw new ApiError(400, "Video Does Not Exist");
+
+    if(!storedVideo.owner.equals(req.user?._id)) throw new ApiError(401, "User is not the Owner of the video");
+
+    const videoUrl = storedVideo.videoFile;
+    const thumbnailUrl = storedVideo.thumbnail;
+
+    const deletedVideoResponse = await Video.deleteOne( { _id: storedVideo._id } );
+
+    if(!deletedVideoResponse.acknowledged) throw new ApiError(500, "Something went wrong while deleting the video");
+
+    const deleteVideoFromCloudinary = await deleteFromCloudinary(videoUrl);
+    const deleteThumbnailFromCloudinary = await deleteFromCloudinary(thumbnailUrl);
+
+    if(!deleteVideoFromCloudinary || !deleteThumbnailFromCloudinary) {
+        console.log("CLOUDINARY DELETE FAILED");
+    }
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            "Video Deleted Successfully"
+        )
+    )
+})
+
 
 export {
     publishAVideo,
+    deleteAVideo
 }
