@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
-import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
+import { deleteFromCloudinary, deleteVideoFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Video } from "../models/video.model.js";
 
 
@@ -96,11 +96,11 @@ const deleteAVideo = asyncHandler( async (req, res) => {
 
     if(!deletedVideoResponse.acknowledged) throw new ApiError(500, "Something went wrong while deleting the video");
 
-    const deleteVideoFromCloudinary = await deleteFromCloudinary(videoUrl);
-    const deleteThumbnailFromCloudinary = await deleteFromCloudinary(thumbnailUrl);
+    const deletedVideoResponseCloudinary = await deleteVideoFromCloudinary(videoUrl);
+    const deletedThumbnailResponseCloudinary = await deleteFromCloudinary(thumbnailUrl);
 
-    if(!deleteVideoFromCloudinary || !deleteThumbnailFromCloudinary) {
-        console.log("CLOUDINARY DELETE FAILED");
+    if(!deletedVideoResponseCloudinary || !deletedThumbnailResponseCloudinary) {
+        console.log("Something went wrong while deleting files from cloudinary");
     }
 
     res
