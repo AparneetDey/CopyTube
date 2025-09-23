@@ -302,7 +302,7 @@ const userAvatarUpdate = asyncHandler(async (req, res) => {
 
     const previousAvatarUrl = user.avatar;
 
-    user.avatar = newAvatar;
+    user.avatar = newAvatar.url;
     await user.save({ validateBeforeSave: false });
 
     const deleteResponse = await deleteFromCloudinary(previousAvatarUrl);
@@ -337,12 +337,12 @@ const userCoverImageUpdate = asyncHandler(async (req, res) => {
 
     const previousCoverImageUrl = user.coverImage;
 
-    user.coverImage = newCoverImage;
+    user.coverImage = newCoverImage.url;
     await user.save({ validateBeforeSave: false });
 
     const deleteResponse = await deleteFromCloudinary(previousCoverImageUrl);
 
-    console.log(deleteResponse);
+    // console.log(deleteResponse);
 
     if (!deleteResponse) {
         console.log("The previous Cover Image is not Deleted from Cloudinary");

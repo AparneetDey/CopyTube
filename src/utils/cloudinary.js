@@ -73,7 +73,7 @@ const deleteFromCloudinary = async (url) => {
 
         const res = await cloudinary.uploader.destroy(publicId);
 
-        return res.result;
+        return (res.result !== "not found");
     } catch (error) {
         console.log("CLOUDINARY DELETE FAILED :: ", error);
     }
