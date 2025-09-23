@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { deleteFromCloudinary, deleteVideoFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Video } from "../models/video.model.js";
+import mongoose from "mongoose";
 
 
 
@@ -113,8 +114,83 @@ const deleteAVideo = asyncHandler( async (req, res) => {
     )
 })
 
+const getAVideo = asyncHandler( async (req, res) => {
+    const { videoId } = req.params;
+
+    if(!videoId) throw new ApiError(400, "Video Id is Required");
+
+    const video = await Video.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(videoId)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "subscriptions",
+                            localField: "_id",
+                            foreignField: "channel",
+                            as: "subscribers"
+                        }
+                    },
+                    {
+                        $addFields: {
+                            subscribersCount: {
+                                $size: "$subscribers"
+                            },
+                            isSubscribed: {
+                                $cond: {
+                                    if: {$in: [req.user._id, "$subscribers.subscriber"]},
+                                    then: true,
+                                    else: false
+                                }
+                            }
+                        }
+                    },
+                    {
+                        $project: {
+                            fullName: 1,
+                            avatar: 1,
+                            subscribersCount: 1,
+                            isSubscribed: 1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $addFields: {
+                owner: {
+                    $first: "$owner"
+                }
+            }
+        }
+    ]);
+
+
+    if(!video.length>0 || !video) throw new ApiError(400, "Video not Found");
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            video,
+            "Video Fetched Successfully"
+        )
+    )
+})
+
 
 export {
     publishAVideo,
-    deleteAVideo
+    deleteAVideo,
+    getAVideo
 }
