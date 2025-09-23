@@ -188,9 +188,60 @@ const getAVideo = asyncHandler( async (req, res) => {
     )
 })
 
+const updateVideoDetail = asyncHandler( async (req, res) => {
+    const { videoId } = req.params;
+
+    if(!videoId) throw new ApiError(400, "Viode Id is Required");
+
+    const { title, description } = req.body;
+    const thumbnailLocalPath = req.file?.path;
+
+    if(!title && !description && !thumbnailLocalPath) throw new ApiError(400, "Atleast one field is Required");
+
+    const video = await Video.findById(videoId);
+
+    if(!video) throw new ApiError(400, "Video not Found");
+
+    if(!video.owner.equals(req.user?._id)) throw new ApiError(401, "User is not the Owner of the video");
+
+    if(title) {
+        video.title = title;
+    }
+    if(description) {
+        video.description = description;
+    }
+    if(thumbnailLocalPath) {
+        const uploadedThumb = await uploadOnCloudinary(thumbnailLocalPath);
+        if(!uploadedThumb) throw new ApiError(500, "Thumbnail upload failed");
+
+        const prevThumbnailUrl = video.thumbnail;
+        video.thumbnail = uploadedThumb.url;
+
+        const deletedThumbnailResponseCloudinary = await deleteFromCloudinary(prevThumbnailUrl);
+
+        if(!deletedThumbnailResponseCloudinary){
+            console.log("Something went wrong while deleting file from cloudinary");
+        }
+    }
+
+    await video.save({validateBeforeSave: false});
+
+    res
+    .status(201)
+    .json(
+        new ApiResponse(
+            200,
+            video,
+            "Video Details Updated Successfully"
+        )
+    )
+
+})
+
 
 export {
     publishAVideo,
     deleteAVideo,
-    getAVideo
+    getAVideo,
+    updateVideoDetail
 }
