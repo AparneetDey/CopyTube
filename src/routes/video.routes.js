@@ -1,14 +1,15 @@
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyToken } from "../middlewares/auth.middleware.js";
-import { deleteAVideo, getAVideo, publishAVideo, togglePublishStatus, updateVideoDetail } from "../controllers/video.controller.js";
+import { deleteAVideo, getAllVideos, getAVideo, publishAVideo, togglePublishStatus, updateVideoDetail } from "../controllers/video.controller.js";
 
 const router = Router();
 
 router.use(verifyToken);
 
 
-router.route("/").post(
+router.route("/")
+.post(
     upload.fields([
         {
             name: "videoFile",
@@ -20,7 +21,8 @@ router.route("/").post(
         }
     ]),
     publishAVideo
-);
+)
+.get(getAllVideos);
 
 router.route("/v/update/:videoId").post(
     upload.single("thumbnail"),
