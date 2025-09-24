@@ -62,7 +62,9 @@ const publishAVideo = asyncHandler( async (req, res) => {
     .json(
         new ApiResponse(
             200,
-            uploadedVideo,
+            {
+                video: uploadedVideo
+            },
             "Video Uploaded Successfully"
         )
     )
@@ -182,7 +184,9 @@ const getAVideo = asyncHandler( async (req, res) => {
     .json(
         new ApiResponse(
             200,
-            video,
+            {
+                video
+            },
             "Video Fetched Successfully"
         )
     )
@@ -193,7 +197,7 @@ const updateVideoDetail = asyncHandler( async (req, res) => {
 
     if(!videoId) throw new ApiError(400, "Viode Id is Required");
 
-    const { title, description } = req.body;
+    const { title, description } = req.body || "";
     const thumbnailLocalPath = req.file?.path;
 
     if(!title && !description && !thumbnailLocalPath) throw new ApiError(400, "Atleast one field is Required");
@@ -231,11 +235,41 @@ const updateVideoDetail = asyncHandler( async (req, res) => {
     .json(
         new ApiResponse(
             200,
-            video,
+            {
+                video
+            },
             "Video Details Updated Successfully"
         )
     )
 
+})
+
+const togglePublishStatus = asyncHandler( async (req, res) => {
+    const {videoId} = req.params;
+
+    if(!videoId) throw new ApiError(400, "Video Id is Required");
+
+    const video = await Video.findById(videoId);
+
+    if(!video) throw new ApiError(400, "Video Not Found");
+
+
+    if(!video.owner.equals(req.user?._id)) throw new ApiError(401, "User is not the owner of this video");
+
+    video.isPublished = !video.isPublished;
+    await video.save({validateBeforeSave: false});
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                video
+            },
+            "Video Publish Status Updated"
+        )
+    )
 })
 
 
@@ -243,5 +277,6 @@ export {
     publishAVideo,
     deleteAVideo,
     getAVideo,
-    updateVideoDetail
+    updateVideoDetail,
+    togglePublishStatus
 }
