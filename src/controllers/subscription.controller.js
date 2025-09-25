@@ -10,24 +10,12 @@ const toggleSubscription = asyncHandler (async (req, res) => {
 
     if(!channelId) throw new ApiError(400, "Channel Id is Required");
 
-    const isUserSubscribed = await Subscription.aggregate([
-        {
-            $match: {
-                channel: channelId
-            }
-        },
-        {
-            $addFields: {
-                isSubscribed: {
-                    if: {$in: [req.user?._id, "$subscriber"]},
-                    then: true,
-                    else: false
-                }
-            }
-        }
-    ])
+    const isUserSubscribed = await Subscription.find({
+        subscriber: req.user?._id,
+        channel: channelId
+    })
 
-    if(isUserSubscribed.isSubscribed){
+    if(isUserSubscribed.length>0){
         const unsubscribedChannel = await Subscription.deleteOne({ subscriber: req.user?._id});
 
         if(!unsubscribedChannel) throw new ApiError(500, "Something went wrong while unsubscribing channel");
@@ -37,7 +25,25 @@ const toggleSubscription = asyncHandler (async (req, res) => {
         .json(
             new ApiResponse(
                 200,
+                {},
                 "Unsubscribed Channel Successfully"
+            )
+        )
+    } else {
+        const subscribedChannel = await Subscription.create({
+            subscriber: req.user?._id,
+            channel: channelId
+        });
+
+        if(!subscribedChannel) throw new ApiError(500, "Something went wrong while subscribing to the channel");
+
+        res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                true,
+                "Subscribed Channel Successfully"
             )
         )
     }
@@ -80,6 +86,8 @@ const getUserChannelSubscribers = asyncHandler( async (req, res) => {
         }
     ]);
 
+    console.log(channelSubscribers);
+
     if(!channelSubscribers) throw new ApiError(500, "Something went wrong while fetching subscribers");
 
     res
@@ -96,4 +104,5 @@ const getUserChannelSubscribers = asyncHandler( async (req, res) => {
 
 export {
     getUserChannelSubscribers,
+    toggleSubscription
 }
