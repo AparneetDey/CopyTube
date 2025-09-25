@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { Subscription } from "../models/subscription.model.js";
+import mongoose from "mongoose";
 
 
 const toggleSubscription = asyncHandler (async (req, res) => {
@@ -57,7 +58,7 @@ const getUserChannelSubscribers = asyncHandler( async (req, res) => {
     const channelSubscribers = await User.aggregate([
         {
             $match: {
-                _id: channelId
+                _id: new mongoose.Types.ObjectId(channelId)
             }
         },
         {
@@ -66,13 +67,18 @@ const getUserChannelSubscribers = asyncHandler( async (req, res) => {
                 localField: "_id",
                 foreignField: "channel",
                 as: "subscribers",
+                pipeline: [
+                    {
+                        $project: {
+                            subscriber: 1
+                        }
+                    }
+                ]
             }
         },
         {
             $addFields: {
-                subscribers: {
-                    $first: "$subscribers"
-                },
+                subscribers: "$subscribers",
                 subscribersCount: {
                     $size: "$subscribers"
                 }
