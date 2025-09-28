@@ -94,53 +94,54 @@ const toggleCommentLike = asyncHandler( async (req, res) => {
     }
 })
 
-// const toggleTweetLike = asyncHandler( async (req, res) => {
-//     const { tweetId } = req.params;
+const toggleTweetLike = asyncHandler( async (req, res) => {
+    const { tweetId } = req.params;
 
-//     if(!tweetId) throw new ApiError(400, "Tweet Id is Required");
+    if(!tweetId) throw new ApiError(400, "Tweet Id is Required");
 
-//     const likedTweet =await Like.find({
-//         tweet: commentId,
-//         likedBy: req.user?._id
-//     });
+    const likedTweet =await Like.find({
+        tweet: tweetId,
+        likedBy: req.user?._id
+    });
 
-//     if(!likedComment || !likedComment.length>0){
-//         const justLikedComment = await Like.create({
-//             comment: commentId,
-//             likedBy: req.user?._id
-//         });
+    if(!likedTweet || !likedTweet.length>0){
+        const justLikedTweet = await Like.create({
+            tweet: tweetId,
+            likedBy: req.user?._id
+        });
 
-//         res
-//         .status(200)
-//         .json(
-//             new ApiResponse(
-//                 200,
-//                 justLikedComment,
-//                 "Liked Comment Successfully"
-//             )
-//         )
-//     } else {
-//         const justUnlikedComment = await Like.deleteOne({
-//             comment: commentId,
-//             likedBy: req.user?._id
-//         });
+        res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                justLikedTweet,
+                "Liked Tweet Successfully"
+            )
+        )
+    } else {
+        const justUnlikedTweet = await Like.deleteOne({
+            tweet: tweetId,
+            likedBy: req.user?._id
+        });
 
-//         if(!justUnlikedComment.acknowledged) throw new ApiError(500, "Something went wrong while unliking the comment");
+        if(!justUnlikedTweet.acknowledged) throw new ApiError(500, "Something went wrong while unliking the tweet");
 
-//         res
-//         .status(200)
-//         .json(
-//             new ApiResponse(
-//                 200,
-//                 {},
-//                 "Unliked Comment Successfully"
-//             )
-//         )
-//     }
-// })
+        res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                {},
+                "Unliked tweet Successfully"
+            )
+        )
+    }
+})
 
 
 export {
     toggleVideoLike,
-    toggleCommentLike
+    toggleCommentLike,
+    toggleTweetLike
 }
