@@ -124,9 +124,36 @@ const updateComment = asyncHandler( async (req, res) => {
     )
 })
 
+const deleteComment = asyncHandler( async (req, res) => {
+    const { commentId } = req.params;
+
+    if(!commentId) throw new ApiError(400, "Comment Id is Required");
+
+    const storedComment = await Comment.findById(commentId);
+
+    if(!storedComment) throw new ApiError("No comment Exist");
+
+    if(!storedComment.owner.equals(req.user?._id)) throw new ApiError(401, "Unauthorized Request");
+
+    const deletedResponse = await Comment.deleteOne({_id: storedComment._id});
+
+    if(!deletedResponse.acknowledged) throw new ApiError(500, "Something went wrong while deleting the comment");
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {},
+            "Comment Deleted Successfully"
+        )
+    )
+})
+
 
 export {
     addComment,
     getAllComments,
-    updateComment
+    updateComment,
+    deleteComment
 }
