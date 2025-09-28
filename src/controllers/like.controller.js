@@ -49,7 +49,98 @@ const toggleVideoLike = asyncHandler( async (req, res) => {
     }
 })
 
+const toggleCommentLike = asyncHandler( async (req, res) => {
+    const { commentId } = req.params;
+
+    if(!commentId) throw new ApiError(400, "Comment Id is Required");
+
+    const likedComment =await Like.find({
+        comment: commentId,
+        likedBy: req.user?._id
+    });
+
+    if(!likedComment || !likedComment.length>0){
+        const justLikedComment = await Like.create({
+            comment: commentId,
+            likedBy: req.user?._id
+        });
+
+        res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                justLikedComment,
+                "Liked Comment Successfully"
+            )
+        )
+    } else {
+        const justUnlikedComment = await Like.deleteOne({
+            comment: commentId,
+            likedBy: req.user?._id
+        });
+
+        if(!justUnlikedComment.acknowledged) throw new ApiError(500, "Something went wrong while unliking the comment");
+
+        res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                {},
+                "Unliked Comment Successfully"
+            )
+        )
+    }
+})
+
+// const toggleTweetLike = asyncHandler( async (req, res) => {
+//     const { tweetId } = req.params;
+
+//     if(!tweetId) throw new ApiError(400, "Tweet Id is Required");
+
+//     const likedTweet =await Like.find({
+//         tweet: commentId,
+//         likedBy: req.user?._id
+//     });
+
+//     if(!likedComment || !likedComment.length>0){
+//         const justLikedComment = await Like.create({
+//             comment: commentId,
+//             likedBy: req.user?._id
+//         });
+
+//         res
+//         .status(200)
+//         .json(
+//             new ApiResponse(
+//                 200,
+//                 justLikedComment,
+//                 "Liked Comment Successfully"
+//             )
+//         )
+//     } else {
+//         const justUnlikedComment = await Like.deleteOne({
+//             comment: commentId,
+//             likedBy: req.user?._id
+//         });
+
+//         if(!justUnlikedComment.acknowledged) throw new ApiError(500, "Something went wrong while unliking the comment");
+
+//         res
+//         .status(200)
+//         .json(
+//             new ApiResponse(
+//                 200,
+//                 {},
+//                 "Unliked Comment Successfully"
+//             )
+//         )
+//     }
+// })
+
 
 export {
-    toggleVideoLike
+    toggleVideoLike,
+    toggleCommentLike
 }
