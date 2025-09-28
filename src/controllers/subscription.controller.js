@@ -70,6 +70,7 @@ const getUserChannelSubscribers = asyncHandler( async (req, res) => {
                 pipeline: [
                     {
                         $project: {
+                            _id: 0,
                             subscriber: 1
                         }
                     }
@@ -86,13 +87,12 @@ const getUserChannelSubscribers = asyncHandler( async (req, res) => {
         },
         {
             $project: {
+                _id: 0,
                 subscribers: 1,
                 subscribersCount: 1
             }
         }
     ]);
-
-    console.log(channelSubscribers);
 
     if(!channelSubscribers) throw new ApiError(500, "Something went wrong while fetching subscribers");
 
@@ -107,8 +107,57 @@ const getUserChannelSubscribers = asyncHandler( async (req, res) => {
     )
 })
 
+const getSubscribedChannels = asyncHandler( async (req, res) => {
+    const { subscriberId } = req.params;
+
+    if(!subscriberId) throw new ApiError(400, "Subscriber Id is Required");
+
+    const subscribedChannel = await User.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(subscriberId)
+            }
+        },
+        {
+            $lookup: {
+                from: "subscriptions",
+                localField: "_id",
+                foreignField: "subscriber",
+                as: "subscribedTo",
+                pipeline: [
+                    {
+                        $project: {
+                            _id: 0,
+                            channel: 1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                subscribedTo: 1
+            }
+        }
+    ]);
+
+    if(!subscribedChannel) throw new ApiError(500, "Something went wrong while fetching the subscribed channels");
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            subscribedChannel,
+            "Subscribed Channel Fetched Successfully"
+        )
+    )
+})
+
 
 export {
     getUserChannelSubscribers,
-    toggleSubscription
+    toggleSubscription,
+    getSubscribedChannels
 }
