@@ -16,6 +16,29 @@ const getAllComments = asyncHandler( async (req, res) => {
             $match: {
                 video: new mongoose.Types.ObjectId(videoId)
             }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner",
+                pipeline: [
+                    {
+                        $project: {
+                            fullName: 1,
+                            avatar: 1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $addFields: {
+                owner: {
+                    $first: "$owner"
+                }
+            }
         }
     ];
 
@@ -77,12 +100,33 @@ const addComment = asyncHandler( async (req, res) => {
     )
 })
 
-// const updateComment = asyncHandler( async (req, res) => {
-//     const { commentId }
-// })
+const updateComment = asyncHandler( async (req, res) => {
+    const { commentId } = req.params;
+    const { content } = req.body;
+
+    if(!commentId) throw new ApiError(400, "Comment Id is Required");
+
+    const comment = await Comment.findById(commentId);
+
+    if(!comment.owner.equals(req.user?._id)) throw new ApiError(401, "Unauthorized Request");
+
+    comment.content = content;
+    await comment.save({validateBeforeSave: false});
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            comment,
+            "Comment Updated Successfully"
+        )
+    )
+})
 
 
 export {
     addComment,
-    getAllComments
+    getAllComments,
+    updateComment
 }
