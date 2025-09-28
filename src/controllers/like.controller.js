@@ -2,6 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Like } from "../models/like.model.js";
+import mongoose from "mongoose";
 
 
 const toggleVideoLike = asyncHandler( async (req, res) => {
@@ -139,9 +140,62 @@ const toggleTweetLike = asyncHandler( async (req, res) => {
     }
 })
 
+const getLikedVideos = asyncHandler( async (req, res) => {
+    const likedVideos = await Like.aggregate([
+        {
+            $match: {
+                likedBy: new mongoose.Types.ObjectId(req.user?._id)
+            }
+        },
+        {
+            $lookup: {
+                from: "videos",
+                localField: "video",
+                foreignField: "_id",
+                as: "likedVideos",
+                pipeline: [
+                    {
+                        $project: {
+                            title: 1,
+                            thumbnail: 1,
+                            owner: 1,
+                            duration: 1,
+                            views: 1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $addFields: {
+                likedVideos: {
+                    $first: "$likedVideos"
+                }
+            }
+        },
+        {
+            $project: {
+                likedVideos: 1,
+                _id: 0
+            }
+        }
+    ])
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            likedVideos,
+            "Liked Videos Fetched Successfully"
+        )
+    )
+})
+
 
 export {
     toggleVideoLike,
     toggleCommentLike,
-    toggleTweetLike
+    toggleTweetLike,
+    getLikedVideos
 }
