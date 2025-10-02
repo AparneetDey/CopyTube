@@ -2,7 +2,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Like } from "../models/like.model.js";
-import mongoose from "mongoose";
+import { Video } from "../models/video.model.js";
+import { mongoose } from "mongoose";
 
 
 const toggleVideoLike = asyncHandler( async (req, res) => {
@@ -144,7 +145,11 @@ const getLikedVideos = asyncHandler( async (req, res) => {
     const likedVideos = await Like.aggregate([
         {
             $match: {
-                likedBy: new mongoose.Types.ObjectId(req.user?._id)
+                likedBy: new mongoose.Types.ObjectId(req.user?._id),
+                video: {
+                    $exists: true,
+                    $type: "objectId"
+                }
             }
         },
         {
@@ -152,7 +157,7 @@ const getLikedVideos = asyncHandler( async (req, res) => {
                 from: "videos",
                 localField: "video",
                 foreignField: "_id",
-                as: "likedVideos",
+                as: "likedVideo",
                 pipeline: [
                     {
                         $project: {
@@ -168,18 +173,23 @@ const getLikedVideos = asyncHandler( async (req, res) => {
         },
         {
             $addFields: {
-                likedVideos: {
-                    $first: "$likedVideos"
+                likedVideo: {
+                    $first: "$likedVideo"
                 }
             }
         },
         {
             $project: {
-                likedVideos: 1,
+                likedVideo: 1,
                 _id: 0
             }
+        },
+        {
+            $replaceRoot: { newRoot: "$likedVideo" }
         }
     ])
+
+    console.log(likedVideos)
 
     res
     .status(200)
