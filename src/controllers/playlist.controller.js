@@ -45,7 +45,31 @@ const getUserPlayLists = asyncHandler( async (req, res) => {
         new ApiResponse(
             200,
             userPlayList,
-            "User's Playlist Fetched Successfully"
+            "User's Playlists Fetched Successfully"
+        )
+    )
+})
+
+const getPlayListById = asyncHandler( async (req, res) => {
+    const { playlistId } = req.params;
+
+    console.log(playlistId)
+
+    if(!playlistId) throw new ApiError(400, "User Id is Required");
+
+    const playList = await Playlist.find({
+        _id: playlistId
+    });
+
+    if(!playList) throw new ApiError(500, "Something went wrong while fetching the user's playlist");
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            playList,
+            "Playlist Fetched Successfully"
         )
     )
 })
@@ -53,5 +77,6 @@ const getUserPlayLists = asyncHandler( async (req, res) => {
 
 export {
     createPlayList,
-    getUserPlayLists
+    getUserPlayLists,
+    getPlayListById
 }
