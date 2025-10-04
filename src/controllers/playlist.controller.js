@@ -135,8 +135,6 @@ const deletePlayList = asyncHandler( async (req, res) => {
 
     const deletedPlayList = await Playlist.findByIdAndDelete(playlistId);
 
-    console.log(deletedPlayList);
-
     if(!deletedPlayList) throw new ApiError(500, "Something went wrong while deleting the playlist");
 
     res
@@ -150,6 +148,37 @@ const deletePlayList = asyncHandler( async (req, res) => {
     )
 })
 
+const updatePlayList = asyncHandler( async (req, res) => {
+    const { playlistId } = req.params;
+    const { name, description } = req.body;
+
+    if(!playlistId) throw new ApiError(400, "Playlist Id is Required");
+
+    if(!name && !description) throw new ApiError(400, "Atleast one field is Required");
+
+    const updatedPlayList = await Playlist.findByIdAndUpdate(playlistId,
+        {
+            $set:{
+                name,
+                description
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            updatedPlayList,
+            "Playlist Updated Successfully"
+        )
+    )
+})
+
 
 export {
     createPlayList,
@@ -157,5 +186,6 @@ export {
     getPlayListById,
     addVideoToPlaylist,
     removeVideoFromPlaylist,
-    deletePlayList
+    deletePlayList,
+    updatePlayList
 }
