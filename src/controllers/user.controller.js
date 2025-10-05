@@ -455,9 +455,7 @@ const getUserWatchHistory = asyncHandler(async (req, res) => {
                             pipeline: [
                                 {
                                     $project: {
-                                        username: 1,
                                         fullName: 1,
-                                        avatar: 1
                                     }
                                 }
                             ]
@@ -469,11 +467,23 @@ const getUserWatchHistory = asyncHandler(async (req, res) => {
                                 $first: "$owner"
                             }
                         }
+                    },
+                    {
+                        $project: {
+                            thumbnail: 1,
+                            title: 1,
+                            description: 1,
+                            owner: 1,
+                            duration: 1,
+                            views: 1
+                        }
                     }
                 ]
             }
         },
     ]);
+
+    console.log(user)
 
     res
     .status(200)
