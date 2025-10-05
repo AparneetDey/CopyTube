@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { deleteFromCloudinary, deleteVideoFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Video } from "../models/video.model.js";
+import { User } from "../models/user.model.js";
 import mongoose from "mongoose";
 
 
@@ -356,6 +357,35 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
         )
 })
 
+const addVideoToWatchHistory = asyncHandler( async (req, res) => {
+    const { videoId } = req.params;
+    
+    if(!videoId) throw new ApiError(400, "Video Id is Required");
+
+    const user = await User.findByIdAndUpdate(req.user?._id,
+        {
+            $push: {
+                watchHistory: videoId
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                watchHistory: user?.watchHistory || []
+            },
+            "Added Video to User Watch History Successfully"
+        )
+    )
+})
+
 
 export {
     publishAVideo,
@@ -363,5 +393,6 @@ export {
     getAVideo,
     updateVideoDetail,
     togglePublishStatus,
-    getAllVideos
+    getAllVideos,
+    addVideoToWatchHistory
 }
