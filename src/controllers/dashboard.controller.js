@@ -99,7 +99,37 @@ const getChannelStats = asyncHandler( async (req, res) => {
     )
 })
 
+const getChannelVideos = asyncHandler( async(req, res) => {
+    const channelVideos = await Video.aggregate([
+        {
+            $match: {
+                owner: req.user?._id
+            }
+        },
+        {
+            $project: {
+                title: 1,
+                thumbnail: 1,
+                duration: 1,
+                views: 1,
+                createdAt: 1
+            }
+        }
+    ])
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            channelVideos,
+            "Channel Videos Fetched Successfully"
+        )
+    )
+})
+
 
 export {
-    getChannelStats
+    getChannelStats,
+    getChannelVideos
 }
