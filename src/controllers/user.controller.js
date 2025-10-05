@@ -483,8 +483,6 @@ const getUserWatchHistory = asyncHandler(async (req, res) => {
         },
     ]);
 
-    console.log(user)
-
     res
     .status(200)
     .json(
