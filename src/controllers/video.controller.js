@@ -69,8 +69,6 @@ const getAllVideos = asyncHandler(async (req, res) => {
         pipeline.push({ $sort: sort });
     }
 
-    console.log(pipeline);
-
     const paginateOptions = {
         page,
         limit,
