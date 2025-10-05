@@ -24,9 +24,11 @@ import commentRouter from "./routes/comment.routes.js"
 import tweetRouter from "./routes/tweet.routes.js"
 import likeRouter from "./routes/like.routes.js"
 import playlistRouter from "./routes/playlist.routes.js"
+import healthcheckRouter from "./routes/healthcheck.routes.js"
 
 
 //Router Declaration
+app.use("/api/v1/healthcheck",healthcheckRouter);
 app.use("/api/v1/users",userRouter);
 app.use("/api/v1/videos",videoRouter);
 app.use("/api/v1/subscriptions",subscriptionRouter);
