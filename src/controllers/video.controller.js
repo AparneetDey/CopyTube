@@ -386,6 +386,34 @@ const addVideoToWatchHistory = asyncHandler( async (req, res) => {
     )
 })
 
+const incrementViewsOfVideo = asyncHandler( async (req, res) => {
+    const { videoId } = req.params;
+
+    if(!videoId) throw new ApiError(400, "Video Id is Required");
+
+    const videoViews = await Video.findByIdAndUpdate(videoId,
+        {
+            $inc:{
+                views: 1
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                views: videoViews.views
+            },
+            "Vidoe View Incremented Successfully"
+        )
+    )
+})
 
 export {
     publishAVideo,
@@ -394,5 +422,6 @@ export {
     updateVideoDetail,
     togglePublishStatus,
     getAllVideos,
-    addVideoToWatchHistory
+    addVideoToWatchHistory,
+    incrementViewsOfVideo
 }
