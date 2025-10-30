@@ -17,7 +17,7 @@ const Navbar = () => {
 
 	const handleSignOut = async () => {
 		try {
-			await api.post("/users/logout");
+			await api.get("/users/logout");
 
 			navigate("/auth")
 		} catch (error) {
@@ -112,7 +112,7 @@ const Navbar = () => {
 											Help
 										</button>
 										<div className="border-t border-gray-200 my-1"></div>
-										<button className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">
+										<button onClick={() => handleSignOut()} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">
 											Sign Out
 										</button>
 									</div>

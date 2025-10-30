@@ -8,7 +8,7 @@ const AuthPage = () => {
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
-  const [isUser, setIsUser] = useState(user ? true : false);
+  const [isUser, setIsUser] = useState(false);
 
   useEffect(() => {
     if(isUser) {
