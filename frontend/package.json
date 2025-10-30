@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "proxy": "http://localhost:8000/api/v1",
   "scripts": {
     "start": "vite",
     "build": "vite build",
@@ -11,6 +12,8 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.16",
+    "axios": "^1.13.1",
+    "lucide-react": "^0.548.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.5",
