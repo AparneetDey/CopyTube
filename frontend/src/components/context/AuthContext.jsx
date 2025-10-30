@@ -14,8 +14,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await api.get("/users/current-user");
 
-      console.log(res)
-
       setUser(res.data.data.user);
     } catch (error) {
       console.log("Something went wrong while fetching user :: ", error)

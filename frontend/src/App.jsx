@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import AuthPage from './components/pages/Auth/AuthPage';
 import Navbar from './components/Navbar/Navbar'
+import { useAuth } from './components/context/AuthContext';
 
 const App = () => {
   const location = useLocation();

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Plus, User, Menu, Video } from 'lucide-react';
-import { useAuth } from './../context/AuthContext'
+import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/apiService';
 
@@ -17,7 +17,7 @@ const Navbar = () => {
 
 	const handleSignOut = async () => {
 		try {
-			await api.get("/users/logout");
+			await api.post("/users/logout");
 
 			navigate("/auth")
 		} catch (error) {
