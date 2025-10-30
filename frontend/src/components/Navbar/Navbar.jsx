@@ -1,14 +1,29 @@
 import React, { useState } from 'react';
 import { Search, Plus, User, Menu, Video } from 'lucide-react';
+import { useAuth } from './../context/AuthContext'
+import { useNavigate } from 'react-router-dom'
+import api from '../../services/apiService';
 
-export default function YouTubeNavbar() {
+const Navbar = () => {
 	const [searchQuery, setSearchQuery] = useState('');
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
+	const { user } = useAuth();
+	const navigate = useNavigate();
 
 	const handleSearch = (e) => {
 		e.preventDefault();
 		console.log('Searching for:', searchQuery);
 	};
+
+	const handleSignOut = async () => {
+		try {
+			await api.get("/users/logout");
+
+			navigate("/auth")
+		} catch (error) {
+			console.log("Something went wrong while signing out :: ", error);
+		}
+	}
 
 	return (
 		<header>
@@ -42,7 +57,7 @@ export default function YouTubeNavbar() {
 										onChange={(e) => setSearchQuery(e.target.value)}
 										onKeyPress={(e) => e.key === 'Enter' && handleSearch(e)}
 										placeholder="Search videos..."
-										className="w-full px-4 py-2.5 pr-12 rounded-l-full border-2 border-blue-500 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
+										className="w-full px-4 py-2.5 pr-12 rounded-l-full border-2 border-blue-500 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-300 transition placeholder:text-white"
 									/>
 									<button
 										onClick={handleSearch}
@@ -66,17 +81,26 @@ export default function YouTubeNavbar() {
 							<div className="relative">
 								<button
 									onClick={() => setIsProfileOpen(!isProfileOpen)}
-									className="w-10 h-10 bg-blue-700 hover:bg-blue-800 rounded-full flex items-center justify-center transition ring-2 ring-blue-400"
+									className="w-10 h-10 bg-blue-700 hover:bg-blue-800 rounded-full flex items-center justify-center transition ring-2 ring-blue-400 overflow-hidden"
 								>
-									<User className="w-5 h-5 text-white" />
+									{user?.avatar ? (
+										<img
+											src={user.avatar}
+											alt="Profile"
+											className="w-full h-full object-cover"
+										/>
+									) : (
+										<User className="w-5 h-5 text-white" />
+									)}
+
 								</button>
 
 								{/* Profile Dropdown */}
 								{isProfileOpen && (
 									<div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 border border-gray-200">
 										<div className="px-4 py-3 border-b border-gray-200">
-											<p className="text-sm font-semibold text-gray-800">John Doe</p>
-											<p className="text-xs text-gray-500">john@example.com</p>
+											<p className="text-sm font-semibold text-gray-800">{user.username}</p>
+											<p className="text-xs text-gray-500">{user.email}</p>
 										</div>
 										<button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition">
 											Your Channel
@@ -101,3 +125,5 @@ export default function YouTubeNavbar() {
 		</header>
 	);
 }
+
+export default Navbar

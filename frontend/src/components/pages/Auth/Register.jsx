@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { User, Mail, Lock, Upload, Eye, EyeOff, CheckCircle, Video } from 'lucide-react';
 import api from '../../../services/apiService';
 
-const Register = ( {setIsLogin} ) => {
+const Register = ( {setIsLogin, setIsUser} ) => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -137,7 +137,7 @@ const Register = ( {setIsLogin} ) => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      console.log(res.data);
+      if (res) setIsUser(true);
     } catch (error) {
       console.log("ERROR WHILE REGISTERING :: ", error);
       setIsSubmitting(false)

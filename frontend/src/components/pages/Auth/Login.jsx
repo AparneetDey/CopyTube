@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Video, Mail, Lock, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react';
 import api from '../../../services/apiService';
 
-const Login = ( {setIsLogin} ) => {
+const Login = ( {setIsLogin, setIsUser} ) => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -68,7 +68,7 @@ const Login = ( {setIsLogin} ) => {
             "headers": "application/json"
         });
 
-        console.log(res.data)
+        if (res) setIsUser(true);
     } catch (error) {
         console.log("ERROR LOGIN :: ", error);
     } finally {

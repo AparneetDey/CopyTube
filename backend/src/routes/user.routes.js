@@ -38,7 +38,7 @@ router.route("/login").post(
 router.route("/refresh-token").post(refreshAccessToken);
 
 //secure routes
-router.route("/logout").post(
+router.route("/logout").get(
     verifyToken,
     userLogOut
 );
