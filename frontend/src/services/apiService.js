@@ -2,7 +2,7 @@ import axios from "axios"
 
 // Create an instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1", // your backend URL
+  baseURL: import.meta.env.VITE_API_URL || "https://copytube.onrender.com", // your backend URL
   withCredentials: true,
   timeout: 10000, // optional
 })

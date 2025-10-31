@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { User, Mail, Lock, Upload, Eye, EyeOff, CheckCircle, Video } from 'lucide-react';
 import api from '../../../services/apiService';
+import { useAuth } from "../../context/AuthContext"
 
 const Register = ( {setIsLogin} ) => {
+  const {getCurrentUser} = useAuth()
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -17,7 +19,6 @@ const Register = ( {setIsLogin} ) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -132,10 +133,13 @@ const Register = ( {setIsLogin} ) => {
     
     try {
       setIsSubmitting(true);
-      // console.log(formData)
       const res = await api.post("/users/register", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+
+      if (res) {
+        await getCurrentUser();
+      }
     } catch (error) {
       console.log("ERROR WHILE REGISTERING :: ", error);
       setIsSubmitting(false)
