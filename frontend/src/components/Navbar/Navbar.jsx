@@ -4,10 +4,12 @@ import { useAuth } from '../context/AuthContext'
 import { useSearch } from '../context/SearchContext'
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/apiService';
+import Sidebar from './Sidebar';
 
 const Navbar = () => {
 	const [localSearchQuery, setLocalSearchQuery] = useState('');
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
+	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const { user, isAuthenticated, getCurrentUser } = useAuth();
 	const { setSearchQuery } = useSearch();
 	const navigate = useNavigate();
@@ -39,16 +41,21 @@ const Navbar = () => {
 	}
 
 	return (
-		<header className='w-full'>
-			{/* Navbar */}
-			< nav className="bg-blue-600 shadow-lg sticky top-0 z-50" >
-				<div className="mx-auto px-4">
-					<div className="flex items-center justify-between h-16">
-						{/* Left Section - Menu & Logo */}
-						<div className="flex items-center space-x-4">
-							<button className="p-2 hover:bg-blue-700 rounded-full transition">
-								<Menu className="w-6 h-6 text-white" />
-							</button>
+		<>
+			<Sidebar isOpen={isSidebarOpen} />
+			<header className='w-full sticky top-0 z-50'>
+				{/* Navbar */}
+				< nav className="bg-blue-600 shadow-lg " >
+					<div className="mx-auto px-4">
+						<div className="flex items-center justify-between h-16">
+							{/* Left Section - Menu & Logo */}
+							<div className="flex items-center space-x-4">
+								<button 
+									onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+									className="p-2 hover:bg-blue-700 rounded-full transition"
+								>
+									<Menu className="w-6 h-6 text-white" />
+								</button>
 
 							<div className="flex items-center space-x-2 cursor-pointer group">
 								<div className="bg-white rounded-lg p-1.5">
@@ -136,6 +143,7 @@ const Navbar = () => {
 				</div>
 			</nav >
 		</header>
+		</>
 	);
 }
 

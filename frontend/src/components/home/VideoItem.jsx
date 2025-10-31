@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Video, User } from 'lucide-react';
 
 const VideoItem = ({ v }) => {
-  const {title, owner, thumbnail, videoFile, duration, views, uploadedAt} = v;
+  const {title, owner, thumbnail, videoFile, duration, views, updatedAt} = v;
   const [isHovered, setIsHovered] = useState(false);
   const [hoverTimer, setHoverTimer] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -21,6 +21,22 @@ const VideoItem = ({ v }) => {
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
 
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now - date;
+  
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+  
+    if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
+    if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+    if (minutes > 0) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    return "just now";
+  }
+  
   const handleMouseEnter = () => {
     setIsHovered(true);
     const timer = setTimeout(() => {
@@ -50,9 +66,7 @@ const VideoItem = ({ v }) => {
   }, [isPlaying]);
 
   return (
-    <div 
-      className="cursor-pointer"
-    >
+    <div className=' cursor-pointer '>
       {/* Thumbnail Container */}
       <div 
         className="relative w-full bg-black rounded-xl overflow-hidden"
@@ -125,7 +139,7 @@ const VideoItem = ({ v }) => {
           <div className="flex items-center text-xs text-gray-600">
             <span>{views || '0'} views</span>
             <span className="mx-1">•</span>
-            <span>{uploadedAt || '2 days ago'}</span>
+            <span>{formatDate(updatedAt)}</span>
           </div>
         </div>
       </div>
