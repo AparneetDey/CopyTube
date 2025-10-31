@@ -253,10 +253,41 @@ const getAVideo = asyncHandler(async (req, res) => {
             }
         },
         {
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "video",
+                as: "videoLikes",
+                pipeline: [
+                    {
+                        $project: {
+                            likedBy: 1,
+                            _id: 0
+                        }
+                    }
+                ]
+            }
+        },
+        {
             $addFields: {
                 owner: {
                     $first: "$owner"
+                },
+                totalLikes: {
+                    $size: "$videoLikes"
+                },
+                likedBy: {
+                    $map: {
+                        input: "$videoLikes",
+                        as: "like",
+                        in: "$$like.likedBy"
+                    }
                 }
+            }
+        },
+        {
+            $project: {
+                videoLikes: 0
             }
         }
     ]);

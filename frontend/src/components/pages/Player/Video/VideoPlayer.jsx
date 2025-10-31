@@ -159,7 +159,7 @@ export default function VideoPlayer({ video }) {
             <div className="text-xs">
               <span>{videoRef.current ? Math.floor(videoRef.current.currentTime) : 0}</span>
               <span> / </span>
-              <span>{videoRef.current ? Math.floor(videoRef.current.duration) : 0}</span>
+              <span>{!isNaN(videoRef.current?.duration) ? Math.floor(videoRef.current.duration) : 0}</span>
             </div>
 
             {/* Settings & Fullscreen */}

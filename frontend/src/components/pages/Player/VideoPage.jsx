@@ -12,15 +12,11 @@ const VideoPage = () => {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
-    console.log(videoId)
-
     const fetchVideo = useCallback(async () => {
         setLoading(true);
         setErrorMessage("");
         try {
             const res = await api.get(`/videos/v/${videoId}`);
-
-            console.log(res.data.data)
             setVideo(res.data.data);
         } catch (error) {
             console.log(error);
