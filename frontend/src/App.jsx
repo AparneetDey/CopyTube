@@ -9,6 +9,7 @@ import AuthPage from './components/pages/Auth/AuthPage';
 import Navbar from './components/Navbar/Navbar'
 import ProtectedRoute from './components/helper/ProtectedRoute';
 import AuthGuard from './components/helper/AuthGuard';
+import Home from './components/pages/Home/Home';
 
 const App = () => {
   const location = useLocation();
@@ -28,7 +29,7 @@ const App = () => {
         path="/home" 
         element={
           <ProtectedRoute>
-            <></>
+            <Home />
           </ProtectedRoute>
         } />
 

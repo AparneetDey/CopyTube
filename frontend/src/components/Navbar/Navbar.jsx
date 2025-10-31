@@ -1,18 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Plus, User, Menu, Video } from 'lucide-react';
 import { useAuth } from '../context/AuthContext'
+import { useSearch } from '../context/SearchContext'
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/apiService';
 
 const Navbar = () => {
-	const [searchQuery, setSearchQuery] = useState('');
+	const [localSearchQuery, setLocalSearchQuery] = useState('');
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
 	const { user, isAuthenticated, getCurrentUser } = useAuth();
+	const { setSearchQuery } = useSearch();
 	const navigate = useNavigate();
+
+	// Debounce search query updates
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setSearchQuery(localSearchQuery);
+		}, 500);
+
+		return () => clearTimeout(timer);
+	}, [localSearchQuery, setSearchQuery]);
 
 	const handleSearch = (e) => {
 		e.preventDefault();
-		console.log('Searching for:', searchQuery);
+		console.log('Searching for:', localSearchQuery);
+		setSearchQuery(localSearchQuery);
 	};
 
 	const handleSignOut = async () => {
@@ -54,11 +66,11 @@ const Navbar = () => {
 								<div className="flex items-center">
 									<input
 										type="text"
-										value={searchQuery}
-										onChange={(e) => setSearchQuery(e.target.value)}
+										value={localSearchQuery}
+										onChange={(e) => setLocalSearchQuery(e.target.value)}
 										onKeyPress={(e) => e.key === 'Enter' && handleSearch(e)}
 										placeholder="Search videos..."
-										className="w-full px-4 py-2.5 pr-12 rounded-l-full border-2 border-blue-500 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-300 transition placeholder:text-white"
+										className="w-full px-4 py-2.5 pr-12 text-white rounded-l-full border-2 border-blue-500 focus:border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-300 transition placeholder:text-white"
 									/>
 									<button
 										onClick={handleSearch}
