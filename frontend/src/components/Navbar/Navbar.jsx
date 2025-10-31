@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Plus, User, Menu, Video } from 'lucide-react';
 import { useAuth } from '../context/AuthContext'
 import { useSearch } from '../context/SearchContext'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import api from '../../services/apiService';
 import Sidebar from './Sidebar';
 import { useMediaQuery } from "@react-hook/media-query";
@@ -59,14 +59,14 @@ const Navbar = () => {
 									<Menu className="w-6 h-6 text-white" />
 								</button>
 
-								<div className="flex items-center space-x-2 cursor-pointer group">
+								<Link to={"/home"} className="flex items-center space-x-2 cursor-pointer group">
 									<div className="bg-white rounded-lg p-1.5">
 										<Video className="w-6 h-6 text-blue-600" />
 									</div>
 									<span className="text-white font-bold text-xl tracking-tight group-hover:text-blue-100 transition">
 										CopyTube
 									</span>
-								</div>
+								</Link>
 							</div>
 
 							{/* Center Section - Search Bar */}

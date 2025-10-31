@@ -10,6 +10,8 @@ import Navbar from './components/Navbar/Navbar'
 import ProtectedRoute from './components/helper/ProtectedRoute';
 import AuthGuard from './components/helper/AuthGuard';
 import Home from './components/pages/Home/Home';
+import { useAuth } from './components/context/AuthContext';
+import VideoPage from './components/pages/Player/VideoPage';
 
 const App = () => {
   const location = useLocation();
@@ -41,6 +43,15 @@ const App = () => {
             }
           />
         </Route>
+
+        <Route 
+          path='/video/:videoId' 
+          element={
+            <ProtectedRoute>
+              <VideoPage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/" element={<Navigate to={"/home"} replace />} />
       </Routes>

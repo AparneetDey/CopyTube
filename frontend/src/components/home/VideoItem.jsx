@@ -31,12 +31,21 @@ const VideoItem = ({ v }) => {
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
+    const years = Math.floor(days / 365)
   
+    if (years > 0) return `${years} day${years > 1 ? "s" : ""} ago`;
     if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
     if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
     if (minutes > 0) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
     return "just now";
   }
+
+  function formatViews(views) {
+    if (views < 1000) return views.toString()
+    if (views < 1_000_000) return (views / 1000).toFixed(1).replace(/\.0$/, '') + 'K'
+    if (views < 1_000_000_000) return (views / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M'
+    return (views / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B'
+  } 
   
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -139,7 +148,7 @@ const VideoItem = ({ v }) => {
             {owner?.fullName || 'Unknown Channel'}
           </p>
           <div className="flex items-center text-xs text-gray-600">
-            <span>{views || '0'} views</span>
+            <span>{formatViews(views) || '0'} views</span>
             <span className="mx-1">•</span>
             <span>{formatDate(updatedAt)}</span>
           </div>
