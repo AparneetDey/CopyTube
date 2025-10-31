@@ -5,6 +5,7 @@
   "type": "module",
   "proxy": "http://localhost:8000/api/v1",
   "scripts": {
+    "dev": "vite",
     "start": "vite",
     "build": "vite build",
     "lint": "eslint .",
