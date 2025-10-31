@@ -7,7 +7,7 @@ const Sidebar = ({ isOpen }) => {
 
   const mainItems = [
     { icon: Home, label: 'Home', path: '/home' },
-    { icon: Twitter, label: 'Tweet', path: '/tweet' },
+    { icon: Twitter, label: 'Tweet', path: '/home/tweet' },
     { icon: TrendingUp, label: 'Trending', path: '/trending' },
     { icon: SubscriptIcon, label: 'Subscriptions', path: '/subscriptions' },
   ];

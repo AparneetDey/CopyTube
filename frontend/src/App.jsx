@@ -31,7 +31,16 @@ const App = () => {
           <ProtectedRoute>
             <Home />
           </ProtectedRoute>
-        } />
+        }>
+          <Route
+            path="tweet" 
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
 
         <Route path="/" element={<Navigate to={"/home"} replace />} />
       </Routes>

@@ -4,30 +4,30 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { Tweet } from "../models/tweet.model.js";
 import mongoose from "mongoose";
 
-const createTweet = asyncHandler( async (req, res) => {
+const createTweet = asyncHandler(async (req, res) => {
     const { content } = req.body;
 
-    if(!content) throw new ApiError(400, "Tweet Content is Required");
+    if (!content) throw new ApiError(400, "Tweet Content is Required");
 
-    const createdTweet =  await Tweet.create({
+    const createdTweet = await Tweet.create({
         content,
         owner: req.user?._id
     });
 
-    if(!createdTweet) throw new ApiError(500, "Something went wrong while saving the tweet");
+    if (!createdTweet) throw new ApiError(500, "Something went wrong while saving the tweet");
 
     res
-    .status(201)
-    .json(
-        new ApiResponse(
-            200,
-            createdTweet,
-            "Tweet Created Successfully"
+        .status(201)
+        .json(
+            new ApiResponse(
+                200,
+                createdTweet,
+                "Tweet Created Successfully"
+            )
         )
-    )
 })
 
-const getUserTweets = asyncHandler( async (req, res) => {
+const getUserTweets = asyncHandler(async (req, res) => {
     const userTweets = await Tweet.aggregate([
         {
             $match: {
@@ -41,70 +41,70 @@ const getUserTweets = asyncHandler( async (req, res) => {
         }
     ]);
 
-    if(!userTweets) throw new ApiError(500, "Something went wrong while fetching the User's Tweets");
+    if (!userTweets) throw new ApiError(500, "Something went wrong while fetching the User's Tweets");
 
     res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            userTweets,
-            "USer's Tweets Fetched Successfully"
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                userTweets,
+                "USer's Tweets Fetched Successfully"
+            )
         )
-    )
 })
 
-const updateTweet = asyncHandler( async (req, res) => {
+const updateTweet = asyncHandler(async (req, res) => {
     const { tweetId } = req.params;
     const { content } = req.body;
 
-    if(!tweetId) throw new ApiError(400, "Tweet Id is Required");
+    if (!tweetId) throw new ApiError(400, "Tweet Id is Required");
 
-    if(!content) throw new ApiError(400, "Tweet Content is Required");
+    if (!content) throw new ApiError(400, "Tweet Content is Required");
 
     const storedTweet = await Tweet.findById(tweetId);
 
-    if(!storedTweet.owner.equals(req.user?._id)) throw new ApiError(401, "Unauthorized Request");
+    if (!storedTweet.owner.equals(req.user?._id)) throw new ApiError(401, "Unauthorized Request");
 
     storedTweet.content = content;
-    await storedTweet.save({validateBeforeSave: false});
+    await storedTweet.save({ validateBeforeSave: false });
 
     res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            storedTweet,
-            "Tweet Updated Successfully"
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                storedTweet,
+                "Tweet Updated Successfully"
+            )
         )
-    )
 })
 
-const deleteTweet = asyncHandler( async (req, res) => {
+const deleteTweet = asyncHandler(async (req, res) => {
     const { tweetId } = req.params;
 
-    if(!tweetId) throw new ApiError(400, "Tweet Id is Required");
+    if (!tweetId) throw new ApiError(400, "Tweet Id is Required");
 
     const storedTweet = await Tweet.findById(tweetId);
 
-    if(!storedTweet.owner.equals(req.user?._id)) throw new ApiError(401, "Unauthorized Request");
+    if (!storedTweet.owner.equals(req.user?._id)) throw new ApiError(401, "Unauthorized Request");
 
-    const deleteResponse = await Tweet.deleteOne({_id: storedTweet._id});
+    const deleteResponse = await Tweet.deleteOne({ _id: storedTweet._id });
 
-    if(!deleteResponse.acknowledged) throw new ApiError(500, "Ssomething went wrong while deleting the tweet");
+    if (!deleteResponse.acknowledged) throw new ApiError(500, "Ssomething went wrong while deleting the tweet");
 
     res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            {},
-            "Tweet Deleted Successfully"
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                {},
+                "Tweet Deleted Successfully"
+            )
         )
-    )
 })
 
-const getAllTweets = asyncHandler( async (req,res) => {
+const getAllTweets = asyncHandler(async (req, res) => {
     const tweets = await Tweet.aggregate([
         {
             $lookup: {
@@ -128,7 +128,15 @@ const getAllTweets = asyncHandler( async (req,res) => {
                 from: "likes",
                 localField: "_id",
                 foreignField: "tweet",
-                as: "tweetLikes"
+                as: "tweetLikes",
+                pipeline: [
+                    {
+                        $project: {
+                            likedBy: 1,
+                            _id: 0
+                        }
+                    }
+                ]
             }
         },
         {
@@ -138,6 +146,13 @@ const getAllTweets = asyncHandler( async (req,res) => {
                 },
                 totalLikes: {
                     $size: "$tweetLikes"
+                },
+                likedBy: {
+                    $map: {
+                        input: "$tweetLikes",
+                        as: "like",
+                        in: "$$like.likedBy"
+                    }
                 }
             }
         },
@@ -145,18 +160,19 @@ const getAllTweets = asyncHandler( async (req,res) => {
             $project: {
                 tweetLikes: 0
             }
-        }
+        },
+        { $sort: { createdAt: -1 } }
     ]);
 
     res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            tweets,
-            "Fetched Tweets Successfully"
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                tweets,
+                "Fetched Tweets Successfully"
+            )
         )
-    )
 })
 
 
