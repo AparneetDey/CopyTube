@@ -269,9 +269,7 @@ const getAVideo = asyncHandler(async (req, res) => {
         .json(
             new ApiResponse(
                 200,
-                {
-                    video
-                },
+                video[0],
                 "Video Fetched Successfully"
             )
         )

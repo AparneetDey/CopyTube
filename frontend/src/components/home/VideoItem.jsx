@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Video, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const VideoItem = ({ v }) => {
   const {title, owner, thumbnail, videoFile, duration, views, updatedAt} = v;
@@ -68,8 +69,9 @@ const VideoItem = ({ v }) => {
   return (
     <div className=' cursor-pointer '>
       {/* Thumbnail Container */}
-      <div 
-        className="relative w-full bg-black rounded-xl overflow-hidden"
+      <Link
+        to={`/video/${v._id}`} 
+        className="block relative w-full bg-black rounded-xl overflow-hidden"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
@@ -79,7 +81,7 @@ const VideoItem = ({ v }) => {
             <img 
               src={thumbnail} 
               alt={title}
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out ${
+              className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ease-in-out ${
                 isPlaying ? 'opacity-0' : 'opacity-100'
               }`}
             />
@@ -98,7 +100,7 @@ const VideoItem = ({ v }) => {
               playsInline 
               muted
               loop
-              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out opacity-100" 
+              className="absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ease-in-out opacity-100" 
             />
           )}
         </div>
@@ -109,7 +111,7 @@ const VideoItem = ({ v }) => {
             {formatDuration(duration)}
           </div>
         )}
-      </div>
+      </Link>
       
       {/* Video Info */}
       <div className="flex gap-3 mt-3">
