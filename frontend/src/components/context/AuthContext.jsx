@@ -8,9 +8,7 @@ const AuthContext = createContext()
 // Provider Component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const location = useLocation();
-  const isAuthPage = location.pathname === "/auth";
+  const [loading, setLoading] = useState(false)
 
   const getCurrentUser = async () => {
     setLoading(true)
@@ -26,14 +24,15 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  useEffect(() => {
-    if(!isAuthPage) {
-      getCurrentUser()
-    }
-  }, [isAuthPage])
+  const value = {
+    user,
+    loading,
+    isAuthenticated: !!user,
+    getCurrentUser
+  }
 
   return (
-    <AuthContext.Provider value={{ user, loading, refreshUser: getCurrentUser }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   )

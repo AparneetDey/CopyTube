@@ -8,6 +8,7 @@ import {
 import AuthPage from './components/pages/Auth/AuthPage';
 import Navbar from './components/Navbar/Navbar'
 import { useAuth } from './components/context/AuthContext';
+import ProtectedRoute from './components/helper/ProtectedRoute';
 
 const App = () => {
   const location = useLocation();
@@ -22,8 +23,14 @@ const App = () => {
       )}
       <Routes>
         <Route path='/auth' element={<AuthPage />} />
-        <Route path="/home" element={<></>} />
-        <Route path="/" element={<Navigate to={"/home"} />} />
+        <Route 
+        path="/home" 
+        element={
+          <ProtectedRoute>
+            <></>
+          </ProtectedRoute>
+        } />
+        <Route path="/" element={<Navigate to={"/home"} replace />} />
       </Routes>
     </main>
   )

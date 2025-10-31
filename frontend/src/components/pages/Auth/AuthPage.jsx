@@ -5,13 +5,16 @@ import { useAuth } from '../../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
 const AuthPage = () => {
-  const { user, refreshUser } = useAuth();
+  const { getCurrentUser, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
-  const [isUser, setIsUser] = useState(false);
+  const [isUser, setIsUser] = useState(isAuthenticated);
+
+  console.log(isAuthenticated)
 
   useEffect(() => {
     if(isUser) {
+      getCurrentUser();
       navigate("/home")
     }
   }, [isUser])

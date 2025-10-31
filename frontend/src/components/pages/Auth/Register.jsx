@@ -136,8 +136,6 @@ const Register = ( {setIsLogin, setIsUser} ) => {
       const res = await api.post("/users/register", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      if (res) setIsUser(true);
     } catch (error) {
       console.log("ERROR WHILE REGISTERING :: ", error);
       setIsSubmitting(false)

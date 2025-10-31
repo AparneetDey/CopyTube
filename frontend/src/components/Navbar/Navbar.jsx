@@ -7,7 +7,7 @@ import api from '../../services/apiService';
 const Navbar = () => {
 	const [searchQuery, setSearchQuery] = useState('');
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
-	const { user } = useAuth();
+	const { user, isAuthenticated, getCurrentUser } = useAuth();
 	const navigate = useNavigate();
 
 	const handleSearch = (e) => {
@@ -19,7 +19,8 @@ const Navbar = () => {
 		try {
 			await api.get("/users/logout");
 
-			navigate("/auth")
+			await getCurrentUser();
+			navigate("/auth");
 		} catch (error) {
 			console.log("Something went wrong while signing out :: ", error);
 		}
@@ -83,7 +84,7 @@ const Navbar = () => {
 									onClick={() => setIsProfileOpen(!isProfileOpen)}
 									className="w-10 h-10 bg-blue-700 hover:bg-blue-800 rounded-full flex items-center justify-center transition ring-2 ring-blue-400 overflow-hidden"
 								>
-									{user?.avatar ? (
+									{isAuthenticated ? (
 										<img
 											src={user.avatar}
 											alt="Profile"
