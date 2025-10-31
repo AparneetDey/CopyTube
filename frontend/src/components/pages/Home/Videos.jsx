@@ -12,7 +12,6 @@ const Videos = () => {
 	const fetchVideos = useCallback(async (query = '') => {
 		setLoading(true);
 		setErrorMessage("");
-		console.log(query)
 		try {
 			const res = await api.get("/videos/", {
 				params: { search_query: query }
