@@ -1,6 +1,5 @@
-import { createContext, useContext, useState, useEffect } from "react"
+import { createContext, useContext, useState, useEffect, useCallback } from "react"
 import api from "../../services/apiService"
-import { useLocation } from "react-router-dom"
 
 // Create Context
 const AuthContext = createContext()
@@ -8,9 +7,9 @@ const AuthContext = createContext()
 // Provider Component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-  const getCurrentUser = async () => {
+  const getCurrentUser = useCallback(async () => {
     setLoading(true)
     try {
       const res = await api.get("/users/current-user");
@@ -22,7 +21,12 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  // Check auth status on mount
+  useEffect(() => {
+    getCurrentUser()
+  }, [getCurrentUser])
 
   const value = {
     user,

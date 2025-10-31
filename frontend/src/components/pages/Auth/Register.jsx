@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { User, Mail, Lock, Upload, Eye, EyeOff, CheckCircle, Video } from 'lucide-react';
 import api from '../../../services/apiService';
 
-const Register = ( {setIsLogin, setIsUser} ) => {
+const Register = ( {setIsLogin} ) => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',

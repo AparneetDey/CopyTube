@@ -27,10 +27,10 @@ const Navbar = () => {
 	}
 
 	return (
-		<header>
+		<header className='w-full'>
 			{/* Navbar */}
 			< nav className="bg-blue-600 shadow-lg sticky top-0 z-50" >
-				<div className="max-w-7xl mx-auto px-4">
+				<div className="mx-auto px-4">
 					<div className="flex items-center justify-between h-16">
 						{/* Left Section - Menu & Logo */}
 						<div className="flex items-center space-x-4">
@@ -84,7 +84,7 @@ const Navbar = () => {
 									onClick={() => setIsProfileOpen(!isProfileOpen)}
 									className="w-10 h-10 bg-blue-700 hover:bg-blue-800 rounded-full flex items-center justify-center transition ring-2 ring-blue-400 overflow-hidden"
 								>
-									{isAuthenticated ? (
+									{isAuthenticated && user ? (
 										<img
 											src={user.avatar}
 											alt="Profile"
@@ -97,7 +97,7 @@ const Navbar = () => {
 								</button>
 
 								{/* Profile Dropdown */}
-								{isProfileOpen && (
+								{isProfileOpen && user && (
 									<div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 border border-gray-200">
 										<div className="px-4 py-3 border-b border-gray-200">
 											<p className="text-sm font-semibold text-gray-800">{user.username}</p>

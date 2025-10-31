@@ -7,8 +7,8 @@ import {
 } from "react-router-dom";
 import AuthPage from './components/pages/Auth/AuthPage';
 import Navbar from './components/Navbar/Navbar'
-import { useAuth } from './components/context/AuthContext';
 import ProtectedRoute from './components/helper/ProtectedRoute';
+import AuthGuard from './components/helper/AuthGuard';
 
 const App = () => {
   const location = useLocation();
@@ -22,7 +22,8 @@ const App = () => {
         </>
       )}
       <Routes>
-        <Route path='/auth' element={<AuthPage />} />
+        <Route path='/auth' element={<AuthGuard><AuthPage /></AuthGuard>} />
+
         <Route 
         path="/home" 
         element={
@@ -30,6 +31,7 @@ const App = () => {
             <></>
           </ProtectedRoute>
         } />
+
         <Route path="/" element={<Navigate to={"/home"} replace />} />
       </Routes>
     </main>
