@@ -84,10 +84,10 @@ export default function CommentsSection() {
           </button>
         )}
       </div>
-      
+
       {/* Add Comment */}
       <div className="flex gap-4 mb-6">
-        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold flex-shrink-0">
+        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold shrink-0">
           Y
         </div>
         <div className="flex-1">
@@ -130,7 +130,7 @@ export default function CommentsSection() {
             <div className="space-y-4">
               {comments.map((comment) => (
                 <div key={comment.id} className="flex gap-4">
-                  <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm shrink-0">
                     {comment.avatar}
                   </div>
                   <div className="flex-1">
