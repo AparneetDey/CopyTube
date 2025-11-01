@@ -84,8 +84,8 @@ const userRegister = asyncHandler(async (req, res) => {
         email,
         fullName,
         password,
-        avatar: avatar.url,
-        coverImage: coverImage?.url || "",
+        avatar: avatar.secure_url,
+        coverImage: coverImage?.secure_url || "",
         refreshToken: ""
     })
 
@@ -304,7 +304,7 @@ const userAvatarUpdate = asyncHandler(async (req, res) => {
 
     const previousAvatarUrl = user.avatar;
 
-    user.avatar = newAvatar.url;
+    user.avatar = newAvatar.secure_url;
     await user.save({ validateBeforeSave: false });
 
     const deleteResponse = await deleteFromCloudinary(previousAvatarUrl);
@@ -339,7 +339,7 @@ const userCoverImageUpdate = asyncHandler(async (req, res) => {
 
     const previousCoverImageUrl = user.coverImage;
 
-    user.coverImage = newCoverImage.url;
+    user.coverImage = newCoverImage.secure_url;
     await user.save({ validateBeforeSave: false });
 
     const deleteResponse = await deleteFromCloudinary(previousCoverImageUrl);
