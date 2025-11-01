@@ -120,7 +120,7 @@ const Navbar = () => {
 
 									{/* Profile Dropdown */}
 									{isProfileOpen && user && (
-										<div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 border border-gray-200">
+										<div className="absolute right-0 top-25 md:top-11 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 border border-gray-200">
 											<div className="px-4 py-3 border-b border-gray-200">
 												<p className="text-sm font-semibold text-gray-800">{user.username}</p>
 												<p className="text-xs text-gray-500">{user.email}</p>

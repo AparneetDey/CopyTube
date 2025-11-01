@@ -18,7 +18,7 @@ const Login = ( {setIsLogin} ) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name.includes("@")){
+    if (value.includes("@")){
         setFormData(prev => ({
             ...prev,
             email: value
@@ -71,11 +71,11 @@ const Login = ( {setIsLogin} ) => {
         });
 
         if (res) {
-          console.log("User Logged In :: ", res);
+          console.log("User Logged In ::", res.data.data.user.username);
           await getCurrentUser();
         }
     } catch (error) {
-        console.log("ERROR LOGIN :: ", error);
+        console.log("ERROR LOGIN ::", error);
     } finally {
         setIsSubmitting(false)
     }

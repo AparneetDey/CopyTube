@@ -138,11 +138,11 @@ const Register = ( {setIsLogin} ) => {
       });
 
       if (res) {
-        console.log("User Logged In :: ", res.data.data.username);
+        console.log("User Logged In ::", res.data.data.username);
         await getCurrentUser();
       }
     } catch (error) {
-      console.log("ERROR WHILE REGISTERING :: ", error);
+      console.log("ERROR WHILE REGISTERING ::", error);
       setIsSubmitting(false)
     } finally {
       setIsSubmitting(false)
