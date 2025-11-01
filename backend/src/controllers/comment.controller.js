@@ -34,10 +34,41 @@ const getAllComments = asyncHandler( async (req, res) => {
             }
         },
         {
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "comment",
+                as: "commentLikes",
+                pipeline: [
+                    {
+                        $project: {
+                            likedBy: 1,
+                            _id: 0
+                        }
+                    }
+                ]
+            }
+        },
+        {
             $addFields: {
                 owner: {
                     $first: "$owner"
+                },
+                totalLikes: {
+                    $size: "$commentLikes"
+                },
+                likedBy: {
+                    $map: {
+                        input: "$commentLikes",
+                        as: "like",
+                        in: "$$like.likedBy"
+                    }
                 }
+            }
+        },
+        {
+            $project: {
+                commentLikes: 0
             }
         }
     ];
