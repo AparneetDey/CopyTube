@@ -1,68 +1,59 @@
-import { useState, useEffect } from "react"
-import { ThumbsUp, ThumbsDown, MoreVertical, ChevronDown, ChevronUp } from "lucide-react"
+import { useState, useEffect, useCallback } from "react"
+import { ThumbsUp, ThumbsDown, MoreVertical, ChevronDown, ChevronUp, User } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useMediaQuery } from "@react-hook/media-query"
+import { useAuth } from "../../../context/AuthContext"
+import api from "../../../../services/apiService"
+import CommentCard from "./CommentCard"
 
-const initialComments = [
-  {
-    id: 1,
-    author: "John Developer",
-    avatar: "J",
-    time: "2 weeks ago",
-    text: "This video is absolutely fantastic! Finally understood closures properly.",
-    likes: 234,
-    liked: false,
-  },
-  {
-    id: 2,
-    author: "Sarah Code",
-    avatar: "S",
-    time: "1 week ago",
-    text: "Great explanation of the event loop. This should be required viewing for all JS developers.",
-    likes: 189,
-    liked: false,
-  },
-  {
-    id: 3,
-    author: "Mike React",
-    avatar: "M",
-    time: "3 days ago",
-    text: "The async/await section really cleared things up for me. Thanks!",
-    likes: 45,
-    liked: false,
-  },
-]
+export default function CommentsSection({ video }) {
+  const { user } = useAuth();
 
-export default function CommentsSection() {
-  const [comments, setComments] = useState(initialComments)
+  const [comments, setComments] = useState({})
   const [newComment, setNewComment] = useState("")
   const [isExpanded, setIsExpanded] = useState(false)
   const isMobileOrTablet = useMediaQuery("(max-width: 1024px)");
 
-  const handleAddComment = () => {
+  const fetchVideoComments = useCallback(async () => {
+    try {
+      const res = await api.get(`/comments/c/${video?._id}`);
+      console.log(res.data.data.comments);
+      setComments(res.data.data.comments);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [video._id])
+
+  useEffect(() => {
+    if (video?._id) {
+      fetchVideoComments();
+    }
+  }, [fetchVideoComments, video._id])
+
+  const handleAddComment = async () => {
     if (newComment.trim()) {
-      const comment = {
-        id: comments.length + 1,
-        author: "You",
-        avatar: "Y",
-        time: "now",
-        text: newComment,
-        likes: 0,
-        liked: false,
+      const formData = {
+        content: newComment,
+        videoId: video._id,
       }
-      setComments([comment, ...comments])
-      setNewComment("")
+
+      try {
+        const res = await api.post(`/comments/c/${video._id}`, formData, {
+          "headers": "application/json"
+        });
+
+        if (res.data.success) {
+          setNewComment("");
+          fetchVideoComments();
+        }
+      } catch (error) {
+        console.log("Error posting comment ::", error);
+      }
     }
   }
 
-  const toggleLike = (id) => {
-    setComments(
-      comments.map((c) => (c.id === id ? { ...c, liked: !c.liked, likes: c.liked ? c.likes - 1 : c.likes + 1 } : c)),
-    )
-  }
-
   return (
-    <div className="border-t border-gray-200 pt-6 mt-6">
+    <div className="border-t border-gray-200 pt-6 mt-6 mb-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-gray-900">{comments.length} Comments</h2>
 
@@ -87,8 +78,18 @@ export default function CommentsSection() {
 
       {/* Add Comment */}
       <div className="flex gap-4 mb-6">
-        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold shrink-0">
-          Y
+        <div className="shrink-0">
+          {user?.avatar ? (
+            <img
+              src={user.avatar}
+              alt={user.username}
+              className="w-10 h-10 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+              <User className="w-5 h-5 text-gray-600" />
+            </div>
+          )}
         </div>
         <div className="flex-1">
           <textarea
@@ -96,7 +97,7 @@ export default function CommentsSection() {
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="Add a comment..."
             className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:border-blue-600 text-gray-900"
-            rows="2"
+            rows="3"
           />
           <div className="flex justify-end gap-2 mt-2">
             <button
@@ -129,37 +130,7 @@ export default function CommentsSection() {
             {/* Comments List */}
             <div className="space-y-4">
               {comments.map((comment) => (
-                <div key={comment.id} className="flex gap-4">
-                  <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                    {comment.avatar}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-900 text-sm">{comment.author}</span>
-                      <span className="text-xs text-gray-600">{comment.time}</span>
-                    </div>
-                    <p className="text-gray-700 text-sm mt-1">{comment.text}</p>
-                    <div className="flex items-center gap-4 mt-2">
-                      <button
-                        onClick={() => toggleLike(comment.id)}
-                        className={`flex items-center gap-1 text-xs font-semibold transition-all ${comment.liked ? "text-blue-600" : "text-gray-600 hover:text-gray-900"
-                          }`}
-                      >
-                        <ThumbsUp className="w-4 h-4" />
-                        <span>{comment.likes}</span>
-                      </button>
-                      <button className="flex items-center gap-1 text-xs font-semibold text-gray-600 hover:text-gray-900 transition-all">
-                        <ThumbsDown className="w-4 h-4" />
-                      </button>
-                      <button className="text-xs font-semibold text-gray-600 hover:text-gray-900 transition-all">
-                        Reply
-                      </button>
-                      <button className="text-gray-600 hover:text-gray-900 ml-auto">
-                        <MoreVertical className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                <CommentCard key={comment._id} c={comment} />
               ))}
             </div>
           </motion.div>
