@@ -12,7 +12,7 @@ const VideoPage = () => {
     const [video, setVideo] = useState({});
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-
+    
     const fetchVideo = useCallback(async () => {
         setLoading(true);
         setErrorMessage("");
@@ -28,7 +28,7 @@ const VideoPage = () => {
     }, [videoId])
 
     useEffect(() => {
-      fetchVideo();
+        fetchVideo();
     }, [fetchVideo, videoId])
 
     if (loading) return <LoadingSpinner />

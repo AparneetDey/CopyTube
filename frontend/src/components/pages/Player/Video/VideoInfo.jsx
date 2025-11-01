@@ -91,7 +91,7 @@ export default function VideoInfo({ video }) {
       <div className="text-sm text-gray-600 mb-4">
         <span>{formatViewsAndSubs(video.views)} views</span>
         <span> • </span>
-        <span>{formatDate(video.updatedAt)}</span>
+        <span>{formatDate(video.createdAt)}</span>
       </div>
 
       {/* Action Buttons */}

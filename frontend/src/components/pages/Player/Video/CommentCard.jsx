@@ -82,7 +82,7 @@ const CommentCard = ({ c }) => {
             <div className="flex-1">
                 <div className="flex items-center gap-2">
                     <span className="font-semibold text-gray-900 text-sm">{c.owner.fullName}</span>
-                    <span className="text-xs text-gray-600">{formatDate(c.updatedAt)}</span>
+                    <span className="text-xs text-gray-600">{formatDate(c.createdAt)}</span>
                 </div>
                 <p className="text-gray-700 text-sm mt-1">{c.content}</p>
                 <div className="flex items-center gap-4 mt-2">

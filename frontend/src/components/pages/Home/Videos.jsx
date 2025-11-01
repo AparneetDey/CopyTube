@@ -15,7 +15,11 @@ const Videos = () => {
 		setErrorMessage("");
 		try {
 			const res = await api.get("/videos/", {
-				params: { search_query: query }
+				params: { 
+					search_query: query,
+					sortBy: "createdAt",
+					sortType: "desc"
+				 }
 			})
 
 			setVideos(res.data.data.videos);

@@ -3,7 +3,7 @@ import { Video, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const VideoItem = ({ v }) => {
-  const {title, owner, thumbnail, videoFile, duration, views, updatedAt} = v;
+  const {title, owner, thumbnail, videoFile, duration, views, createdAt} = v;
   const [isHovered, setIsHovered] = useState(false);
   const [hoverTimer, setHoverTimer] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -150,7 +150,7 @@ const VideoItem = ({ v }) => {
           <div className="flex items-center text-xs text-gray-600">
             <span>{formatViews(views) || '0'} views</span>
             <span className="mx-1">•</span>
-            <span>{formatDate(updatedAt)}</span>
+            <span>{formatDate(createdAt)}</span>
           </div>
         </div>
       </div>

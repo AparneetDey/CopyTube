@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import api from '../../services/apiService'
 
 const TweetCard = ({ t }) => {
-	const { owner, updatedAt, content, totalLikes } = t;
+	const { owner, createdAt, content, totalLikes } = t;
 	const { user } = useAuth()
 	const [isLiked, setIsLiked] = useState(false)
 	const [likeCount, setLikeCount] = useState(totalLikes)
@@ -74,7 +74,7 @@ const TweetCard = ({ t }) => {
 							</span>
 							<span className="text-gray-500">@{owner.username}</span>
 							<span className="text-gray-500">·</span>
-							<span className="text-gray-500 text-sm">{formatDate(updatedAt)}</span>
+							<span className="text-gray-500 text-sm">{formatDate(createdAt)}</span>
 						</div>
 						<button className="text-gray-500 hover:text-blue-500 hover:bg-blue-50 rounded-full p-1.5 -mr-1.5">
 							<MoreHorizontal className="w-5 h-5" />

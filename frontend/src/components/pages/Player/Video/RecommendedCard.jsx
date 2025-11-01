@@ -64,7 +64,7 @@ const RecommendedCard = ({ video }) => {
                 </h4>
                 <p className="text-xs text-gray-600 mt-1">{video.channel}</p>
                 <p className="text-xs text-gray-600">
-                    {formatViewsAndSubs(video.views)} • {formatDate(video.updatedAt)}
+                    {formatViewsAndSubs(video.views)} • {formatDate(video.createdAt)}
                 </p>
             </div>
         </Link>

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { Play, Pause, Volume2, VolumeX, Settings, Maximize } from "lucide-react"
+import api from "../../../../services/apiService"
 
 export default function VideoPlayer({ video }) {
   const [isPlaying, setIsPlaying] = useState(false)
@@ -8,9 +9,35 @@ export default function VideoPlayer({ video }) {
   const [showSettings, setShowSettings] = useState(false)
   const [playbackRate, setPlaybackRate] = useState(1)
   const [showControls, setShowControls] = useState(false)
+  const [hasCountedView, setHasCountedView] = useState(false)
+
   const videoRef = useRef(null)
   const hideTimeoutRef = useRef(null)
-  const isMobile = window.innerWidth <= 1024
+  const isMobile = window.innerWidth <= 1024;
+
+  useEffect(() => {
+    const videoEl = videoRef.current;
+    if (!videoEl) return;
+  
+    const playVideo = async () => {
+      try {
+        videoEl.muted = false; // try unmuted first
+        await videoEl.play();
+        console.log("Playing with sound");
+      } catch (err) {
+        console.warn("Autoplay blocked, retrying muted...");
+        videoEl.muted = true;
+        await videoEl.play();
+      }
+    };
+  
+    const timeout = setTimeout(playVideo, 700);
+    return () => clearTimeout(timeout);
+  }, [video]);
+  
+
+  
+  
 
   // Toggle play/pause
   const togglePlay = () => {
@@ -50,14 +77,14 @@ export default function VideoPlayer({ video }) {
   // Fullscreen toggle
   const toggleFullScreen = async () => {
     const videoEl = videoRef.current;
-  
+
     if (!document.fullscreenElement) {
       try {
         await videoEl.requestFullscreen();
-  
+
         // Try to lock the screen to landscape on mobile
         if (screen.orientation && screen.orientation.lock) {
-          await screen.orientation.lock("landscape").catch(() => {});
+          await screen.orientation.lock("landscape").catch(() => { });
         }
       } catch (err) {
         console.log("Error entering fullscreen:", err);
@@ -65,7 +92,7 @@ export default function VideoPlayer({ video }) {
     } else {
       try {
         await document.exitFullscreen();
-  
+
         // Unlock the orientation when exiting
         if (screen.orientation && screen.orientation.unlock) {
           screen.orientation.unlock();
@@ -90,7 +117,7 @@ export default function VideoPlayer({ video }) {
       setShowControls(false)
     }, 1500)
   }
-  
+
   const handleVideoClick = () => {
     if (isMobile) {
       setShowControls(true)
@@ -117,8 +144,38 @@ export default function VideoPlayer({ video }) {
     }
   }, [isMobile])
 
+  const countView = async (videoId) => {
+    try {
+      await api.get(`/videos/v/views/${videoId}`)
+    } catch (err) {
+      console.error("View increment failed:", err)
+    }
+  }
+
+  useEffect(() => {
+    const videoEl = videoRef.current
+    if (!videoEl) return
+
+    const handleProgress = () => {
+      if (!hasCountedView) {
+        const watchedTime = videoEl.currentTime
+        const duration = videoEl.duration
+        const watchedPercentage = (watchedTime / duration) * 100
+
+        // Trigger when watched >= 30s or >= 50%
+        if (watchedTime >= 30 || watchedPercentage >= 50) {
+          countView(video._id)
+          setHasCountedView(true)
+        }
+      }
+    }
+
+    videoEl.addEventListener("timeupdate", handleProgress)
+    return () => videoEl.removeEventListener("timeupdate", handleProgress)
+  }, [video._id, hasCountedView])
+
   return (
-    <div 
+    <div
       className="w-full bg-black rounded-lg overflow-hidden mb-4 aspect-video relative group"
       onClick={handleVideoClick}
     >
@@ -132,7 +189,7 @@ export default function VideoPlayer({ video }) {
       />
 
       {/* Controls Overlay */}
-      <div 
+      <div
         className={`absolute inset-0 bg-[#0000004c] transition-all flex flex-col justify-between p-4 
           ${isMobile
             ? showControls
@@ -140,7 +197,7 @@ export default function VideoPlayer({ video }) {
               : "opacity-0 pointer-events-none"
             : "opacity-0 group-hover:opacity-100"}
           `}
-        >
+      >
         {/* Top Controls */}
         <div className="flex justify-between items-start">
           <div></div>
@@ -158,9 +215,8 @@ export default function VideoPlayer({ video }) {
                   <button
                     key={rate}
                     onClick={() => changeSpeed(rate)}
-                    className={`block w-full text-left px-3 py-1 hover:bg-gray-700 ${
-                      rate === playbackRate ? "bg-gray-700" : ""
-                    }`}
+                    className={`block w-full text-left px-3 py-1 hover:bg-gray-700 ${rate === playbackRate ? "bg-gray-700" : ""
+                      }`}
                   >
                     {rate}x
                   </button>

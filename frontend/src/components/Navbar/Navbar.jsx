@@ -16,19 +16,10 @@ const Navbar = () => {
 	const navigate = useNavigate();
 	const isMobile = useMediaQuery("(max-width: 768px)");
 
-	// Debounce search query updates
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			setSearchQuery(localSearchQuery);
-		}, 500);
-
-		return () => clearTimeout(timer);
-	}, [localSearchQuery, setSearchQuery]);
-
 	const handleSearch = (e) => {
 		e.preventDefault();
-		console.log('Searching for:', localSearchQuery);
 		setSearchQuery(localSearchQuery);
+		navigate("/home")
 	};
 
 	const handleSignOut = async () => {
