@@ -71,7 +71,7 @@ const Login = ( {setIsLogin} ) => {
         });
 
         if (res) {
-          console.log("User Logged In :: ", res.data.data.username);
+          console.log("User Logged In :: ", res);
           await getCurrentUser();
         }
     } catch (error) {
