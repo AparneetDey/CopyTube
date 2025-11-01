@@ -17,7 +17,7 @@ export default function CommentsSection({ video }) {
   const fetchVideoComments = useCallback(async () => {
     try {
       const res = await api.get(`/comments/c/${video?._id}`);
-      console.log(res.data.data.comments);
+
       setComments(res.data.data.comments);
     } catch (error) {
       console.log(error);
@@ -129,7 +129,7 @@ export default function CommentsSection({ video }) {
           >
             {/* Comments List */}
             <div className="space-y-4">
-              {comments.map((comment) => (
+              {comments.length>0 && comments?.map((comment) => (
                 <CommentCard key={comment._id} c={comment} />
               ))}
             </div>

@@ -5,6 +5,7 @@ import VideoInfo from "./Video/VideoInfo";
 import VideoPlayer from "./Video/VideoPlayer";
 import { useParams } from "react-router-dom";
 import api from "../../../services/apiService";
+import LoadingSpinner from "../../loading/LoadingSpinner";
 
 const VideoPage = () => {
     const { videoId } = useParams();
@@ -29,7 +30,8 @@ const VideoPage = () => {
     useEffect(() => {
       fetchVideo();
     }, [fetchVideo, videoId])
-    
+
+    if (loading) return <LoadingSpinner />
 
     return (
         <main className="pt-4 px-4">
@@ -43,7 +45,7 @@ const VideoPage = () => {
 
                 {/* Recommended Videos Sidebar */}
                 <div className="lg:col-span-1">
-                    <RecommendedVideos />
+                    <RecommendedVideos v={video} />
                 </div>
             </div>
         </main>

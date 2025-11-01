@@ -92,7 +92,7 @@ const CommentCard = ({ c }) => {
                             }`}
                     >
                         <ThumbsUp className="w-4 h-4" />
-                        <span>{likes}</span>
+                        <span>{formatLike(likes)}</span>
                     </button>
                     <button className="flex items-center gap-1 text-xs font-semibold text-gray-600 hover:text-gray-900 transition-all">
                         <ThumbsDown className="w-4 h-4" />
