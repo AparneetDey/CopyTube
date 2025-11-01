@@ -12,6 +12,7 @@ import AuthGuard from './components/helper/AuthGuard';
 import Home from './components/pages/Home/Home';
 import { useAuth } from './components/context/AuthContext';
 import VideoPage from './components/pages/Player/VideoPage';
+import UploadPage from './components/pages/Upload/UploadPage';
 
 const App = () => {
   const location = useLocation();
@@ -19,7 +20,7 @@ const App = () => {
 
   return (
     <main className='min-h-screen flex flex-col '>
-      { !isAuthPage && (
+      {!isAuthPage && (
         <>
           <Navbar />
         </>
@@ -27,15 +28,15 @@ const App = () => {
       <Routes>
         <Route path='/auth' element={<AuthGuard><AuthPage /></AuthGuard>} />
 
-        <Route 
-        path="/home" 
-        element={
-          <ProtectedRoute>
-            <Home />
-          </ProtectedRoute>
-        }>
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }>
           <Route
-            path="tweet" 
+            path="tweet"
             element={
               <ProtectedRoute>
                 <Home />
@@ -44,11 +45,20 @@ const App = () => {
           />
         </Route>
 
-        <Route 
-          path='/video/:videoId' 
+        <Route
+          path='/video/:videoId'
           element={
             <ProtectedRoute>
               <VideoPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path='/upload'
+          element={
+            <ProtectedRoute>
+              <UploadPage />
             </ProtectedRoute>
           }
         />

@@ -86,10 +86,10 @@ const Navbar = () => {
 							{/* Right Section - Create & Profile */}
 							<div className="flex items-center space-x-4">
 								{/* Create Button */}
-								<button className="flex items-center space-x-2 px-4 py-2 bg-blue-700 hover:bg-blue-800 rounded-full transition group">
+								<Link to={"/upload"} className="flex items-center space-x-2 px-4 py-2 bg-blue-700 hover:bg-blue-800 rounded-full transition group">
 									<Plus className="w-5 h-5 text-white group-hover:rotate-90 transition-transform duration-300" />
 									{!isMobile && <span className="text-white font-medium">Create</span>}
-								</button>
+								</Link>
 
 								{/* Profile Icon */}
 								<div className="relative">
