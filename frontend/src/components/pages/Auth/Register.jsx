@@ -138,6 +138,7 @@ const Register = ( {setIsLogin} ) => {
       });
 
       if (res) {
+        console.log("User Logged In :: ", res.data.data.username);
         await getCurrentUser();
       }
     } catch (error) {
