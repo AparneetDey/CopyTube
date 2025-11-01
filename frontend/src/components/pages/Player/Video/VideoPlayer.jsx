@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Play, Pause, Volume2, VolumeX, Settings, Maximize } from "lucide-react"
 
 export default function VideoPlayer({ video }) {
@@ -7,7 +7,10 @@ export default function VideoPlayer({ video }) {
   const [volume, setVolume] = useState(1)
   const [showSettings, setShowSettings] = useState(false)
   const [playbackRate, setPlaybackRate] = useState(1)
+  const [showControls, setShowControls] = useState(false)
   const videoRef = useRef(null)
+  const hideTimeoutRef = useRef(null)
+  const isMobile = window.innerWidth <= 1024
 
   // Toggle play/pause
   const togglePlay = () => {
@@ -45,14 +48,33 @@ export default function VideoPlayer({ video }) {
   }
 
   // Fullscreen toggle
-  const toggleFullScreen = () => {
-    const videoEl = videoRef.current
+  const toggleFullScreen = async () => {
+    const videoEl = videoRef.current;
+  
     if (!document.fullscreenElement) {
-      videoEl.requestFullscreen().catch(err => console.log(err))
+      try {
+        await videoEl.requestFullscreen();
+  
+        // Try to lock the screen to landscape on mobile
+        if (screen.orientation && screen.orientation.lock) {
+          await screen.orientation.lock("landscape").catch(() => {});
+        }
+      } catch (err) {
+        console.log("Error entering fullscreen:", err);
+      }
     } else {
-      document.exitFullscreen()
+      try {
+        await document.exitFullscreen();
+  
+        // Unlock the orientation when exiting
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        }
+      } catch (err) {
+        console.log("Error exiting fullscreen:", err);
+      }
     }
-  }
+  };
 
   // Change playback speed
   const changeSpeed = (rate) => {
@@ -62,8 +84,44 @@ export default function VideoPlayer({ video }) {
     setShowSettings(false)
   }
 
+  const resetHideTimer = () => {
+    if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
+    hideTimeoutRef.current = setTimeout(() => {
+      setShowControls(false)
+    }, 1500)
+  }
+  
+  const handleVideoClick = () => {
+    if (isMobile) {
+      setShowControls(true)
+      resetHideTimer()
+    }
+  }
+
+  useEffect(() => {
+    if (!isMobile) return
+
+    const handleUserActivity = () => {
+      setShowControls(true)
+      resetHideTimer()
+    }
+
+    const video = videoRef.current
+    video.addEventListener("touchstart", handleUserActivity)
+    video.addEventListener("mousemove", handleUserActivity)
+
+    return () => {
+      clearTimeout(hideTimeoutRef.current)
+      video.removeEventListener("touchstart", handleUserActivity)
+      video.removeEventListener("mousemove", handleUserActivity)
+    }
+  }, [isMobile])
+
   return (
-    <div className="w-full bg-black rounded-lg overflow-hidden mb-4 aspect-video relative group">
+    <div 
+      className="w-full bg-black rounded-lg overflow-hidden mb-4 aspect-video relative group"
+      onClick={handleVideoClick}
+    >
       {/* Video Element */}
       <video
         ref={videoRef}
@@ -74,7 +132,15 @@ export default function VideoPlayer({ video }) {
       />
 
       {/* Controls Overlay */}
-      <div className="absolute inset-0 bg-[#0000004c] group-hover:bg-opacity-30 transition-all flex flex-col justify-between p-4 opacity-0 group-hover:opacity-100">
+      <div 
+        className={`absolute inset-0 bg-[#0000004c] transition-all flex flex-col justify-between p-4 
+          ${isMobile
+            ? showControls
+              ? "opacity-100"
+              : "opacity-0 pointer-events-none"
+            : "opacity-0 group-hover:opacity-100"}
+          `}
+        >
         {/* Top Controls */}
         <div className="flex justify-between items-start">
           <div></div>
