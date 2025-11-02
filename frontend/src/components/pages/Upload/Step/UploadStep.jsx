@@ -10,6 +10,15 @@ const UploadStep = ({ onVideoSelect, videoFile, isUploading, uploadProgress, err
         }
     };
 
+    const formatFileSize = (bytes) => {
+        if (!bytes) return "0 B";
+        const sizes = ["B", "KB", "MB", "GB", "TB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        const value = bytes / Math.pow(1024, i);
+        return `${value.toFixed(value < 10 && i > 0 ? 2 : 1)} ${sizes[i]}`;
+    };
+
+
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="max-w-6xl mx-auto p-4 sm:p-6">
