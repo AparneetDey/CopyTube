@@ -82,8 +82,8 @@ const UploadPage = () => {
             newErrors.description = 'Description must be less than 5000 characters';
         }
 
-        if (!videoDetails.category) {
-            newErrors.category = 'Please select a category';
+        if(!thumbnailFile) {
+            newErrors.thumbnailFile = "Please upload a thumbnail before proceeding.";
         }
 
         return newErrors;
@@ -186,9 +186,6 @@ const UploadPage = () => {
 
                     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 sm:p-4 z-50 shadow-lg">
                         <div className="max-w-7xl mx-auto flex items-center justify-end gap-2 sm:gap-4">
-                            <button className="px-4 sm:px-6 py-2 text-sm sm:text-base text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition">
-                                Save as draft
-                            </button>
                             <button
                                 onClick={handlePublish}
                                 className="px-4 sm:px-6 py-2 text-sm sm:text-base bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition"

@@ -12,7 +12,7 @@ const VideoPreview = ({ videoFile, thumbnailFile, videoDetails }) => {
                         <img
                             src={thumbnailFile}
                             alt="Preview"
-                            className="w-full h-full object-cover rounded-lg"
+                            className="w-full h-full object-contain rounded-lg"
                         />
                     ) : (
                         <Video className="w-12 h-12 text-gray-600" />

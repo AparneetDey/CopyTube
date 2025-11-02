@@ -1,4 +1,4 @@
-import { Image } from 'lucide-react';
+import { Image, X } from 'lucide-react';
 import React from 'react'
 
 // Details Form Component
@@ -13,7 +13,7 @@ const DetailsForm = ({ videoDetails, setVideoDetails, errors, thumbnailFile, onT
             {/* Title */}
             <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Title (required)
+                    Title <span className="text-red-500">*</span>
                 </label>
                 <input
                     type="text"
@@ -58,7 +58,7 @@ const DetailsForm = ({ videoDetails, setVideoDetails, errors, thumbnailFile, onT
             {/* Thumbnail */}
             <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Thumbnail
+                    Thumbnail <span className="text-red-500">*</span>
                 </label>
                 <p className="text-xs sm:text-sm text-gray-600 mb-4">
                     Select or upload a picture that shows what's in your video
@@ -70,7 +70,7 @@ const DetailsForm = ({ videoDetails, setVideoDetails, errors, thumbnailFile, onT
                             <img
                                 src={thumbnailFile}
                                 alt="Thumbnail"
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-contain"
                             />
                             <button
                                 onClick={onRemoveThumbnail}
@@ -82,62 +82,26 @@ const DetailsForm = ({ videoDetails, setVideoDetails, errors, thumbnailFile, onT
                     ) : (
                         <label className="aspect-video bg-gray-100 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-200 transition border-2 border-dashed border-gray-300">
                             <Image className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 mb-1 sm:mb-2" />
-                            <span className="text-xs sm:text-sm text-gray-600">Upload</span>
+                            <span className="text-xs sm:text-sm text-gray-600">Upload (Required)</span>
                             <input
                                 type="file"
                                 accept="image/*"
+                                required
                                 onChange={onThumbnailSelect}
                                 className="hidden"
                             />
                         </label>
                     )}
                 </div>
-            </div>
 
-            {/* Category */}
-            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Category (required)
-                </label>
-                <select
-                    name="category"
-                    value={videoDetails.category}
-                    onChange={handleInputChange}
-                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 border ${errors.category ? 'border-red-500' : 'border-gray-300'
-                        } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm sm:text-base`}
-                >
-                    <option value="">Select a category</option>
-                    <option value="education">Education</option>
-                    <option value="entertainment">Entertainment</option>
-                    <option value="gaming">Gaming</option>
-                    <option value="music">Music</option>
-                    <option value="news">News & Politics</option>
-                    <option value="science">Science & Technology</option>
-                    <option value="sports">Sports</option>
-                    <option value="vlog">People & Blogs</option>
-                </select>
-                {errors.category && (
-                    <p className="text-red-500 text-xs sm:text-sm mt-2">{errors.category}</p>
+                {/* Validation message */}
+                {errors.thumbnailFile && (
+                    <p className="text-red-500 text-xs sm:text-sm mt-2">
+                        Please upload a thumbnail before proceeding.
+                    </p>
                 )}
             </div>
 
-            {/* Tags */}
-            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tags
-                </label>
-                <input
-                    type="text"
-                    name="tags"
-                    value={videoDetails.tags}
-                    onChange={handleInputChange}
-                    placeholder="Enter tags separated by commas"
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm sm:text-base"
-                />
-                <p className="text-xs sm:text-sm text-gray-500 mt-2">
-                    Tags can help people find your video
-                </p>
-            </div>
         </div>
     );
 }
