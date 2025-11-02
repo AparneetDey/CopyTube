@@ -13,7 +13,8 @@ router.route("/")
     upload.fields([
         {
             name: "videoFile",
-            maxCount: 1
+            maxCount: 1,
+            limits: { fileSize: 1024 * 1024 * 500 }
         },
         {
             name: "thumbnail",
