@@ -17,7 +17,7 @@ function TweetComposer({ onTweet }) {
 		}
 		try {
 			const res = await api.post("/tweets/", formData, {
-				"headers": "application/json"
+				headers: "application/json"
 			})
 
 			if(res) window.location.reload()

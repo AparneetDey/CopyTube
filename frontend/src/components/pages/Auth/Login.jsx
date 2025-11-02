@@ -67,7 +67,7 @@ const Login = ( {setIsLogin} ) => {
     try {
         setIsSubmitting(true);
         const res = await api.post("/users/login", formData, {
-            "headers": "application/json"
+            headers: "application/json"
         });
 
         if (res) {
