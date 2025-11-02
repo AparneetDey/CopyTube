@@ -16,14 +16,15 @@ const UploadPage = () => {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [publishProgress, setPublishProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
+    const [isPublished, setIsPublished] = useState(true);
     const [error, setError] = useState('');
 
     const [videoDetails, setVideoDetails] = useState({
         title: '',
         description: '',
-        visibility: 'public',
-        category: '',
-        tags: ''
+        thumbnail: thumbnailFile,
+        videoFile,
+        isPublished
     });
 
     const [errors, setErrors] = useState({});
@@ -163,9 +164,9 @@ const UploadPage = () => {
                                 onRemoveThumbnail={() => setThumbnailFile(null)}
                             />
                             <VisibilitySettings
-                                videoDetails={videoDetails}
-                                setVideoDetails={setVideoDetails}
                                 isMobile={true}
+                                isPublished={isPublished}
+                                setIsPublished={setIsPublished}
                             />
                         </div>
 
@@ -176,9 +177,9 @@ const UploadPage = () => {
                                 videoDetails={videoDetails}
                             />
                             <VisibilitySettings
-                                videoDetails={videoDetails}
-                                setVideoDetails={setVideoDetails}
                                 isMobile={false}
+                                isPublished={isPublished}
+                                setIsPublished={setIsPublished}
                             />
                         </div>
                     </div>
