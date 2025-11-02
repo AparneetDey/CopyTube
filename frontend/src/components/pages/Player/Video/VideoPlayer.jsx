@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react"
-import { Play, Pause, Volume2, VolumeX, Settings, Maximize } from "lucide-react"
+import { Play, Pause, Volume2, VolumeX, Settings, Maximize, Loader } from "lucide-react"
 import api from "../../../../services/apiService"
 
 export default function VideoPlayer({ video }) {
   const [isPlaying, setIsPlaying] = useState(false)
+  const [isBuffering, setIsBuffering] = useState(false)
   const [progress, setProgress] = useState(0)
   const [volume, setVolume] = useState(1)
   const [showSettings, setShowSettings] = useState(false)
@@ -14,30 +15,6 @@ export default function VideoPlayer({ video }) {
   const videoRef = useRef(null)
   const hideTimeoutRef = useRef(null)
   const isMobile = window.innerWidth <= 1024;
-
-  useEffect(() => {
-    const videoEl = videoRef.current;
-    if (!videoEl) return;
-  
-    const playVideo = async () => {
-      try {
-        videoEl.muted = false; // try unmuted first
-        await videoEl.play();
-        console.log("Playing with sound");
-      } catch (err) {
-        console.warn("Autoplay blocked, retrying muted...");
-        videoEl.muted = true;
-        await videoEl.play();
-      }
-    };
-  
-    const timeout = setTimeout(playVideo, 700);
-    return () => clearTimeout(timeout);
-  }, [video]);
-  
-
-  
-  
 
   // Toggle play/pause
   const togglePlay = () => {
@@ -125,6 +102,23 @@ export default function VideoPlayer({ video }) {
     }
   }
 
+  const formatTime = (seconds) => {
+    if (isNaN(seconds)) return "00:00";
+
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+
+    if (hrs > 0) {
+      return `${hrs}:${mins.toString().padStart(2, "0")}:${secs
+        .toString()
+        .padStart(2, "0")}`;
+    } else {
+      return `${mins}:${secs.toString().padStart(2, "0")}`;
+    }
+  };
+
+
   useEffect(() => {
     if (!isMobile) return
 
@@ -174,6 +168,9 @@ export default function VideoPlayer({ video }) {
     return () => videoEl.removeEventListener("timeupdate", handleProgress)
   }, [video._id, hasCountedView])
 
+  const handleWaiting = () => setIsBuffering(true)
+  const handlePlaying = () => setIsBuffering(false)
+
   return (
     <div
       className="w-full bg-black rounded-lg overflow-hidden mb-4 aspect-video relative group"
@@ -186,11 +183,23 @@ export default function VideoPlayer({ video }) {
         className="w-full h-full object-contain"
         onTimeUpdate={handleTimeUpdate}
         onEnded={() => setIsPlaying(false)}
+        onWaiting={handleWaiting}
+        onPlaying={handlePlaying}
+        onCanPlay={handlePlaying}
       />
+
+      {isBuffering && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none transition-opacity duration-300 opacity-100">
+          <div className="bg-white bg-opacity-90 rounded-full p-4 transform -translate-y-3">
+            <Loader className="w-12 h-12 text-blue-500 animate-spin" />
+          </div>
+        </div>
+      )}
+
 
       {/* Controls Overlay */}
       <div
-        className={`absolute inset-0 bg-[#0000004c] transition-all flex flex-col justify-between p-4 
+        className={`absolute inset-0 bg-[#0000004c] transition-all z-3 flex flex-col justify-between p-4 
           ${isMobile
             ? showControls
               ? "opacity-100"
@@ -227,21 +236,29 @@ export default function VideoPlayer({ video }) {
         </div>
 
         {/* Center Play Button */}
-        <div className="flex justify-center items-center">
-          <button
-            onClick={togglePlay}
-            className="bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-4 transition-all"
-          >
-            {isPlaying ? (
-              <Pause className="w-12 h-12 text-black fill-black" />
-            ) : (
-              <Play className="w-12 h-12 text-black fill-black" />
-            )}
-          </button>
-        </div>
+        {!isBuffering &&
+          (<div className="flex justify-center items-center">
+            <button
+              onClick={togglePlay}
+              className="bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-4 transition-all"
+            >
+              {isPlaying ? (
+                <Pause className="w-12 h-12 text-black fill-black" />
+              ) : (
+                <Play className="w-12 h-12 text-black fill-black" />
+              )}
+            </button>
+          </div>)}
 
         {/* Bottom Controls */}
         <div className="space-y-2">
+
+          {/* Timer */}
+          <div className="text-xs flex justify-between text-white px-1">
+            <span>{formatTime(videoRef.current?.currentTime || 0)}</span>
+            <span>{formatTime(videoRef.current?.duration || 0)}</span>
+          </div>
+
           {/* Progress Bar */}
           <div
             className="w-full bg-gray-600 h-1 rounded-full hover:h-2 transition-all cursor-pointer"
@@ -275,13 +292,6 @@ export default function VideoPlayer({ video }) {
                   className="w-20 accent-white"
                 />
               </div>
-            </div>
-
-            {/* Timer */}
-            <div className="text-xs">
-              <span>{videoRef.current ? Math.floor(videoRef.current.currentTime) : 0}</span>
-              <span> / </span>
-              <span>{!isNaN(videoRef.current?.duration) ? Math.floor(videoRef.current.duration) : 0}</span>
             </div>
 
             {/* Settings & Fullscreen */}
