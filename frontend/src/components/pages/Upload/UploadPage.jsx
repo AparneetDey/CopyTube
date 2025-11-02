@@ -35,8 +35,8 @@ const UploadPage = () => {
             return;
         }
 
-        if (file.size > 500 * 1024 * 1024) {
-            setError('Video file must be less than 500MB');
+        if (file.size > 100 * 1024 * 1024) {
+            setError('Video file must be less than 100MB');
             return;
         }
 

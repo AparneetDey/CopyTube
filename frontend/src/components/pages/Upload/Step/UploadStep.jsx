@@ -87,7 +87,7 @@ const UploadStep = ({ onVideoSelect, videoFile, isUploading, uploadProgress, err
                                         {videoFile?.name}
                                     </h3>
                                     <p className="text-xs sm:text-sm text-gray-600">
-                                        {(videoFile?.size / (1024 * 1024)).toFixed(2)} MB
+                                        {formatFileSize(videoFile?.size)} MB
                                     </p>
                                 </div>
                             </div>
