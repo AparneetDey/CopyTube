@@ -102,7 +102,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
     // Check if video is stored or not
     // return res
 
-    const { title, description } = req.body;
+    const { title, description, isPublished=true } = req.body;
 
     if (!title?.trim()) throw new ApiError(400, "Title is Required");
 
@@ -133,7 +133,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
         description,
         owner: req.user?._id,
         duration: video?.duration.toFixed(2),
-        isPublished: true
+        isPublished
     });
 
     if (!uploadedVideo) {
