@@ -4,7 +4,6 @@ import axios from "axios"
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "https://copytube.onrender.com", // your backend URL
   withCredentials: true,
-  timeout: 10000, // optional
 })
 
 // Optional: Add interceptors for tokens or logging

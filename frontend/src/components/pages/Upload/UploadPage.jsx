@@ -6,12 +6,15 @@ import PublishingProgress from './Step/PublishingProgress';
 import VisibilitySettings from './Step/VisibilitySettings';
 import VideoPreview from './Step/VideoPreview';
 import DetailsForm from './Step/DetailsForm';
+import api from "../../../services/apiService";
+
 
 
 // Main App Component
 const UploadPage = () => {
     const [step, setStep] = useState('upload'); // 'upload', 'details', 'publishing', 'success'
     const [videoFile, setVideoFile] = useState(null);
+    const [thumbnail, setThumbnail] = useState(null)
     const [thumbnailFile, setThumbnailFile] = useState(null);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [publishProgress, setPublishProgress] = useState(0);
@@ -22,9 +25,6 @@ const UploadPage = () => {
     const [videoDetails, setVideoDetails] = useState({
         title: '',
         description: '',
-        thumbnail: thumbnailFile,
-        videoFile,
-        isPublished
     });
 
     const [errors, setErrors] = useState({});
@@ -61,11 +61,8 @@ const UploadPage = () => {
     const handleThumbnailSelect = (e) => {
         const file = e.target.files[0];
         if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setThumbnailFile(reader.result);
-            };
-            reader.readAsDataURL(file);
+            setThumbnail(file); // Save actual File object
+            setThumbnailFile(URL.createObjectURL(file)); // For preview only
         }
     };
 
@@ -82,49 +79,68 @@ const UploadPage = () => {
             newErrors.description = 'Description must be less than 5000 characters';
         }
 
-        if(!thumbnailFile) {
+        if (!thumbnail) {
             newErrors.thumbnailFile = "Please upload a thumbnail before proceeding.";
         }
 
         return newErrors;
     };
 
-    const handlePublish = () => {
+    const handlePublish = async () => {
         const newErrors = validateDetails();
-
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
 
-        setStep('publishing');
+        setStep("publishing");
         setPublishProgress(0);
 
-        // Simulate publishing to backend
-        const interval = setInterval(() => {
-            setPublishProgress(prev => {
-                if (prev >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => setStep('success'), 500);
-                    return 100;
+        // Create form data (important for file uploads)
+        const formData = new FormData();
+        formData.append("videoFile", videoFile);
+        formData.append("thumbnail", thumbnail);
+        formData.append("title", videoDetails.title);
+        formData.append("description", videoDetails.description);
+        formData.append("isPublished", isPublished);
+
+        try {
+            const totalSize = videoFile.size;
+            let uploaded = 0;
+
+            // manual progress logic
+            const interval = setInterval(() => {
+                if (uploaded < totalSize * 0.99) {
+                    // simulate upload chunks
+                    uploaded += totalSize * 0.03; // increase 1% per interval
+                    const percent = Math.min((uploaded / totalSize) * 100, 99);
+                    setPublishProgress(Math.floor(percent));
                 }
-                return prev + 5;
+            }, 4000);
+
+            await api.post("/videos/", formData, {
+                headers: { "Content-Type": "multipart/form-data" }
             });
-        }, 400);
+
+            clearInterval(interval);
+            setPublishProgress(100);
+            setTimeout(() => setStep("success"), 500);
+        } catch (error) {
+            console.error("Something went wrong while uploading video:", error);
+        }
     };
+
 
     const handleUploadAnother = () => {
         setStep('upload');
         setVideoFile(null);
+        setIsPublished(true);
         setThumbnailFile(null);
         setUploadProgress(0);
         setPublishProgress(0);
         setVideoDetails({
             title: '',
             description: '',
-            visibility: 'public',
-            category: '',
-            tags: ''
         });
         setErrors({});
         setError('');
@@ -213,6 +229,7 @@ const UploadPage = () => {
             <SuccessScreen
                 videoDetails={videoDetails}
                 onUploadAnother={handleUploadAnother}
+                isPublished={isPublished}
             />
         );
     }
