@@ -23,16 +23,19 @@ const SuccessScreen = ({ videoDetails, onUploadAnother, isPublished }) => {
                     </div>
                 </div>
 
-                <div className="space-y-3">
-                    <Link to={"/home"} className="w-full px-5 sm:px-6 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition text-sm sm:text-base">
-                        View on YouTube
+                <div className="flex flex-col gap-3">
+                    <Link to={"/home"}>
+                        <button className="w-full px-5 sm:px-6 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition text-sm sm:text-base">
+                            View on YouTube
+                        </button>
                     </Link>
-                    <button
-                        onClick={onUploadAnother}
-                        className="w-full px-5 sm:px-6 py-2.5 sm:py-3 border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition text-sm sm:text-base"
-                    >
-                        Upload another video
-                    </button>
+                    <Link to={"/upload"}>
+                        <button
+                            className="w-full px-5 sm:px-6 py-2.5 sm:py-3 border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition text-sm sm:text-base"
+                        >
+                            Upload another video
+                        </button>
+                    </Link>
                 </div>
             </div>
         </div>

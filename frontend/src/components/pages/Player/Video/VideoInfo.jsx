@@ -51,23 +51,25 @@ export default function VideoInfo({ video }) {
 
   const toggleLike = async () => {
     try {
-      await api.get(`/likes/l/video/${video._id}`);
+      // Optimistic update (immediate UI feedback)
+      setLiked(prevLiked => {
+        setLikes(prevLikes => prevLiked ? prevLikes - 1 : prevLikes + 1);
+        return !prevLiked;
+      });
 
-      if (liked) {
-        setLikes((prev) => (
-          prev = prev - 1
-        ))
-        setLiked(false)
-      } else {
-        setLikes((prev) => (
-          prev = prev + 1
-        ))
-        setLiked(true)
-      }
+      // API call
+      await api.get(`/likes/l/video/${video._id}`);
     } catch (error) {
-      console.log("Error toggling like ::", error)
+      console.log("Error toggling like ::", error);
+
+      // Rollback if API fails
+      setLiked(prevLiked => {
+        setLikes(prevLikes => prevLiked ? prevLikes - 1 : prevLikes + 1);
+        return !prevLiked;
+      });
     }
-  }
+  };
+
 
   const toggleSubscribe = async () => {
     try {

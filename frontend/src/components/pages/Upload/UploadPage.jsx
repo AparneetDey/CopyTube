@@ -12,7 +12,7 @@ import api from "../../../services/apiService";
 
 // Main App Component
 const UploadPage = () => {
-    const [step, setStep] = useState('upload'); // 'upload', 'details', 'publishing', 'success'
+    const [step, setStep] = useState('success'); // 'upload', 'details', 'publishing', 'success'
     const [videoFile, setVideoFile] = useState(null);
     const [thumbnail, setThumbnail] = useState(null)
     const [thumbnailFile, setThumbnailFile] = useState(null);
@@ -130,22 +130,6 @@ const UploadPage = () => {
         }
     };
 
-
-    const handleUploadAnother = () => {
-        setStep('upload');
-        setVideoFile(null);
-        setIsPublished(true);
-        setThumbnailFile(null);
-        setUploadProgress(0);
-        setPublishProgress(0);
-        setVideoDetails({
-            title: '',
-            description: '',
-        });
-        setErrors({});
-        setError('');
-    };
-
     if (step === 'upload') {
         return (
             <UploadStep
@@ -228,7 +212,6 @@ const UploadPage = () => {
         return (
             <SuccessScreen
                 videoDetails={videoDetails}
-                onUploadAnother={handleUploadAnother}
                 isPublished={isPublished}
             />
         );

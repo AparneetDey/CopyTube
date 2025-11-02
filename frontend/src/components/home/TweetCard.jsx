@@ -30,30 +30,32 @@ const TweetCard = ({ t }) => {
 	}
 
 	const formatNumber = (num) => {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-    return num;
-  };
+		if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+		if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+		return num;
+	};
 
 	const handleLike = async () => {
 		try {
-			await api.get(`/likes/l/tweet/${t._id}`);
+			// Optimistically update the UI
+			setIsLiked(prevLiked => {
+				setLikeCount(prevCount => prevLiked ? prevCount - 1 : prevCount + 1);
+				return !prevLiked;
+			});
 
-			if(isLiked) {
-				setLikeCount( (prev) => (
-					prev = prev-1
-				))
-				setIsLiked(false)
-			}else {
-				setLikeCount( (prev) => (
-					prev = prev+1
-				))
-				setIsLiked(true)
-			}
+			// API request
+			await api.get(`/likes/l/tweet/${t._id}`);
 		} catch (error) {
-			console.log("Error toggling like ::", error)
+			console.log("Error toggling like ::", error);
+
+			// Rollback if API fails
+			setIsLiked(prevLiked => {
+				setLikeCount(prevCount => prevLiked ? prevCount - 1 : prevCount + 1);
+				return !prevLiked;
+			});
 		}
 	};
+
 
 	return (
 		<div className="border-b border-gray-200 hover:bg-gray-50 transition p-4 cursor-pointer">

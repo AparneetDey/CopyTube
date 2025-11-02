@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 
 const VideoItem = ({ v }) => {
   const {title, owner, thumbnail, videoFile, duration, views, createdAt} = v;
-  const [isHovered, setIsHovered] = useState(false);
   const [hoverTimer, setHoverTimer] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef(null);
@@ -48,7 +47,6 @@ const VideoItem = ({ v }) => {
   } 
   
   const handleMouseEnter = () => {
-    setIsHovered(true);
     const timer = setTimeout(() => {
       setIsPlaying(true);
     }, 1000); // Start playing after 1 second of hover
@@ -56,7 +54,6 @@ const VideoItem = ({ v }) => {
   };
 
   const handleMouseLeave = () => {
-    setIsHovered(false);
     setIsPlaying(false);
     if (hoverTimer) {
       clearTimeout(hoverTimer);
