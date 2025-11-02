@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle, UploadIcon, Video, X } from 'lucide-react';
+import { AlertCircle, CheckCircle, UploadIcon, Video} from 'lucide-react';
 import React from 'react'
 
 // Upload Component
@@ -24,14 +24,11 @@ const UploadStep = ({ onVideoSelect, videoFile, isUploading, uploadProgress, err
             <div className="max-w-6xl mx-auto p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-6 sm:mb-8">
                     <div className="flex items-center gap-3">
-                        <div className="bg-red-600 rounded-lg p-2">
+                        <div className="bg-blue-500 rounded-lg p-2">
                             <Video className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
                         <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Upload videos</h1>
                     </div>
-                    <button className="text-gray-500 hover:text-gray-700">
-                        <X className="w-5 h-5 sm:w-6 sm:h-6" />
-                    </button>
                 </div>
 
                 <div className="bg-white rounded-lg shadow-sm p-8 sm:p-12">
@@ -69,7 +66,7 @@ const UploadStep = ({ onVideoSelect, videoFile, isUploading, uploadProgress, err
 
                             <div className="mt-6 sm:mt-8 p-3 sm:p-4 bg-gray-50 rounded-lg">
                                 <p className="text-xs sm:text-sm text-gray-600 mb-2">
-                                    By submitting your videos to YouTube, you acknowledge that you agree to YouTube's Terms of Service and Community Guidelines.
+                                    By submitting your videos to CopyTube, you acknowledge that you agree to CopyTube's Terms of Service and Community Guidelines.
                                 </p>
                                 <p className="text-xs sm:text-sm text-gray-600">
                                     Please be sure not to violate others' copyright or privacy rights.

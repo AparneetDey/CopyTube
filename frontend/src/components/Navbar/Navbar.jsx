@@ -54,7 +54,7 @@ const Navbar = () => {
 										}`}>
 								<button
 									onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-									className="p-2 hover:bg-blue-700 rounded-full transition"
+									className="p-2 hover:bg-blue-700 rounded-full transition cursor-pointer"
 								>
 									<Menu className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
 								</button>
@@ -155,7 +155,7 @@ const Navbar = () => {
 								<div className={`relative ${isMobile && isSearchExpanded ? 'opacity-0 scale-95 pointer-events-none hidden' : 'opacity-100 scale-100 block'} transition-all duration-300 `}>
 									<button
 										onClick={() => setIsProfileOpen(!isProfileOpen)}
-										className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-700 hover:bg-blue-800 rounded-full flex items-center justify-center transition ring-2 ring-blue-400 overflow-hidden"
+										className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-700 hover:bg-blue-800 rounded-full flex items-center justify-center transition ring-2 ring-blue-400 overflow-hidden cursor-pointer"
 									>
 										{isAuthenticated && user ? (
 											<img
