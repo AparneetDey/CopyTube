@@ -175,7 +175,7 @@ const Navbar = () => {
 												<p className="text-sm font-semibold text-gray-800">{user.username}</p>
 												<p className="text-xs text-gray-500">{user.email}</p>
 											</div>
-											<Link to={`/channel/${user._id}`}>
+											<Link to={`/channel/${user.username}`}>
 												<button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition">
 													Your Channel
 												</button>

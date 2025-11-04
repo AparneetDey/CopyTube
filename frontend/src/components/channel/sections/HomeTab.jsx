@@ -30,7 +30,7 @@ const HomeTab = ({ videos }) => {
           <div className="space-y-4">
             {videos.slice(1, 4).map((video, index) => (
               <div key={index} className="flex gap-3 cursor-pointer group">
-                <div className="relative w-40 aspect-video bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                <div className="relative w-40 aspect-video bg-gray-200 rounded-lg overflow-hidden shrink-0">
                   <img 
                     src={video.thumbnail} 
                     alt={video.title}

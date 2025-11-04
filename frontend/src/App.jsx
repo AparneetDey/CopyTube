@@ -65,7 +65,7 @@ const App = () => {
         />
 
         <Route
-          path='/channel/:channelId'
+          path='/channel/:username'
           element={
             <ProtectedRoute>
               <ChannelPage />

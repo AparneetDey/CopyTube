@@ -1,29 +1,39 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Video, Users} from 'lucide-react';
 import ChannelHeader from './sections/ChannelHeader';
 import TabNavigation from './sections/TabNavigation';
 import TweetsTab from './sections/TweetsTab';
 import HomeTab from './sections/HomeTab';
 import VideosTab from './sections/VideosTab';
+import { useParams } from "react-router-dom";
+import api from '../../services/apiService';
 
 // Main Channel Page Component
 export default function ChannelPage() {
+  const {username} = useParams();
   const [activeTab, setActiveTab] = useState('home');
-  const [channelData, setChannelData] = useState({
-    name: 'Tech Tutorials',
-    handle: 'techtutorials',
-    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop',
-    banner: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&h=300&fit=crop',
-    subscribers: '1.2M',
-    videoCount: 245,
-    verified: true,
-    description: 'Learn coding, web development, and tech tutorials. New videos every week! 🚀',
-    fullDescription: 'Welcome to Tech Tutorials! We create high-quality programming tutorials, web development guides, and technology reviews.\n\nOn this channel you will find:\n• JavaScript & React tutorials\n• Python programming guides\n• Web development projects\n• Tech product reviews\n\nNew videos every Tuesday and Friday!',
-    email: 'contact@techtutorials.com',
-    location: 'San Francisco, CA',
-    joinedDate: 'Jan 15, 2020',
-    totalViews: '45.8M'
-  });
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [channel, setChannel] = useState({});
+
+  const fetchChannel = useCallback(async (username) => {
+    setLoading(true);
+    setErrorMessage("");
+    try {
+      const res = await api.get(`/users/c/${username}`);
+
+      console.log(res.data.data.channel);
+      setChannel(res.data.data.channel);
+    } catch (error) {
+      console.log("Something went wrong while fetching error ::",error);
+      setErrorMessage("No channel available!");
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchChannel(username);
+  }, [username])
+  
 
   const handleAvatarChange = (newAvatar) => {
     setChannelData(prev => ({ ...prev, avatar: newAvatar }));
@@ -118,7 +128,7 @@ export default function ChannelPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <ChannelHeader 
-        channel={channelData} 
+        channel={channel} 
         onAvatarChange={handleAvatarChange}
         onBannerChange={handleBannerChange}
       />
