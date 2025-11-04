@@ -11,8 +11,6 @@ const Videos = () => {
 	const [page, setPage] = useState(1);
 	const [hasMore, setHasMore] = useState(true);
 
-	console.log(page)
-
 	const { searchQuery } = useSearch();
 
 	const fetchVideos = useCallback(async (query = '', newPage = 1) => {

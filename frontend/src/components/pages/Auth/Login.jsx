@@ -3,14 +3,14 @@ import { Video, Mail, Lock, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide
 import api from '../../../services/apiService';
 import { useAuth } from '../../context/AuthContext';
 
-const Login = ( {setIsLogin} ) => {
+const Login = ({ setIsLogin }) => {
   const { getCurrentUser } = useAuth();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: ''
   });
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -18,18 +18,18 @@ const Login = ( {setIsLogin} ) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (value.includes("@")){
-        setFormData(prev => ({
-            ...prev,
-            email: value
-          }));
+    if (value.includes("@")) {
+      setFormData(prev => ({
+        ...prev,
+        email: value
+      }));
     } else {
-        setFormData(prev => ({
-          ...prev,
-          [name]: value
-        }));
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
     }
-    
+
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -40,44 +40,46 @@ const Login = ( {setIsLogin} ) => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.username.trim()) {
       newErrors.usernameOrEmail = 'Username or email is required';
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-    
+
     return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const newErrors = validateForm();
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    
-    try {
-        setIsSubmitting(true);
-        const res = await api.post("/users/login", formData, {
-            headers: "application/json"
-        });
 
-        if (res) {
-          console.log("User Logged In ::", res.data.data.user.username);
-          await getCurrentUser();
-        }
+    try {
+      setIsSubmitting(true);
+      const res = await api.post("/users/login", formData, {
+        headers: "application/json"
+      });
+
+      if (res) {
+        console.log("User Logged In ::", res.data.data.user.username);
+        // After login
+        localStorage.setItem("token", res.data.data.accessToken);
+        await getCurrentUser();
+      }
     } catch (error) {
-        console.log("ERROR LOGIN ::", error);
+      console.log("ERROR LOGIN ::", error);
     } finally {
-        setIsSubmitting(false)
+      setIsSubmitting(false)
     }
   };
 
@@ -111,9 +113,8 @@ const Login = ( {setIsLogin} ) => {
                 name="username"
                 value={formData.usernameOrEmail}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-4 py-3 border ${
-                  errors.usernameOrEmail ? 'border-red-500' : 'border-gray-300'
-                } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
+                className={`w-full pl-10 pr-4 py-3 border ${errors.usernameOrEmail ? 'border-red-500' : 'border-gray-300'
+                  } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                 placeholder="Enter username or email"
               />
             </div>
@@ -137,9 +138,8 @@ const Login = ( {setIsLogin} ) => {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-12 py-3 border ${
-                  errors.password ? 'border-red-500' : 'border-gray-300'
-                } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
+                className={`w-full pl-10 pr-12 py-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'
+                  } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                 placeholder="Enter your password"
               />
               <button
@@ -176,11 +176,10 @@ const Login = ( {setIsLogin} ) => {
           <button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className={`w-full py-3 rounded-lg font-semibold text-white transition shadow-lg ${
-              isSubmitting
+            className={`w-full py-3 rounded-lg font-semibold text-white transition shadow-lg ${isSubmitting
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-700 active:scale-95 hover:shadow-xl'
-            }`}
+              }`}
           >
             {isSubmitting ? (
               <span className="flex items-center justify-center">

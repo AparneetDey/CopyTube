@@ -16,8 +16,14 @@ export const AuthProvider = ({ children }) => {
 
       setUser(res.data.data.user);
     } catch (error) {
-      console.log("Something went wrong while fetching user :: ", error)
-      setUser(null)
+      try {
+        const res = await api.post("/users/refresh-token");
+
+        if(res) getCurrentUser();
+      } catch (error) {
+        console.log("Something went wrong while logging in ::", error);
+        setUser(null);
+      }
     } finally {
       setLoading(false)
     }
