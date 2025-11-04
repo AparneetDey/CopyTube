@@ -10,10 +10,9 @@ import Navbar from './components/Navbar/Navbar'
 import ProtectedRoute from './components/helper/ProtectedRoute';
 import AuthGuard from './components/helper/AuthGuard';
 import Home from './components/pages/Home/Home';
-import { useAuth } from './components/context/AuthContext';
 import VideoPage from './components/pages/Player/VideoPage';
 import UploadPage from './components/pages/Upload/UploadPage';
-import ChannelPage from './components/channel/ChannelPage';
+import ChannelPage from "./components/pages/channel/ChannelPage"
 
 const App = () => {
   const location = useLocation();

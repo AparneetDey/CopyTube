@@ -6,7 +6,7 @@ import TweetsTab from './sections/TweetsTab';
 import HomeTab from './sections/HomeTab';
 import VideosTab from './sections/VideosTab';
 import { useParams } from "react-router-dom";
-import api from '../../services/apiService';
+import api from '../../../services/apiService';
 
 // Main Channel Page Component
 export default function ChannelPage() {
@@ -155,7 +155,7 @@ export default function ChannelPage() {
             <p>No community posts yet</p>
           </div>
         )}
-        {activeTab === 'tweets' && <TweetsTab tweets={tweets} />}
+        {activeTab === 'tweets' && <TweetsTab id={channel._id} />}
       </div>
     </div>
   );

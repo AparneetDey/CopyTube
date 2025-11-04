@@ -13,7 +13,7 @@ const Tweets = () => {
     setLoading(true);
     setErrorMessage("");
     try {
-      const res = await api.get("/tweets/t/all");
+      const res = await api.get("/tweets/all");
 
       setTweets(res.data.data)
     } catch (error) {

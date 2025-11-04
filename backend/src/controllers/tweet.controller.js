@@ -28,10 +28,11 @@ const createTweet = asyncHandler(async (req, res) => {
 })
 
 const getUserTweets = asyncHandler(async (req, res) => {
+    const {userId} = req.params;
     const userTweets = await Tweet.aggregate([
         {
             $match: {
-                owner: new mongoose.Types.ObjectId(req.user?._id)
+                owner: new mongoose.Types.ObjectId(userId)
             }
         },
         {
@@ -49,7 +50,7 @@ const getUserTweets = asyncHandler(async (req, res) => {
             new ApiResponse(
                 200,
                 userTweets,
-                "USer's Tweets Fetched Successfully"
+                "User's Tweets Fetched Successfully"
             )
         )
 })

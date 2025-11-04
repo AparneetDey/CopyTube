@@ -1,6 +1,6 @@
 import { Settings, Share2 } from 'lucide-react';
 import React, { useState } from 'react';
-import { useAuth } from "../../context/AuthContext"
+import { useAuth } from "../../../context/AuthContext"
 
 const ChannelHeader = ({ channel, onAvatarChange, onBannerChange }) => {
   const { user } = useAuth();

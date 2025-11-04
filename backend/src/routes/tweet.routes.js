@@ -9,9 +9,11 @@ router.use(verifyToken);
 
 router.route("/")
 .post(createTweet)
-.get(getUserTweets);
 
-router.route("/t/all").get(getAllTweets);
+
+router.route("/t/c/:userId").get(getUserTweets);
+
+router.route("/all").get(getAllTweets);
 
 router.route("/t/:tweetId").post(updateTweet).get(deleteTweet);
 
