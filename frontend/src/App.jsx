@@ -13,6 +13,7 @@ import Home from './components/pages/Home/Home';
 import { useAuth } from './components/context/AuthContext';
 import VideoPage from './components/pages/Player/VideoPage';
 import UploadPage from './components/pages/Upload/UploadPage';
+import ChannelPage from './components/channel/ChannelPage';
 
 const App = () => {
   const location = useLocation();
@@ -46,7 +47,7 @@ const App = () => {
         </Route>
 
         <Route
-          path='/video/:videoId'
+          path='/watch/:videoId'
           element={
             <ProtectedRoute>
               <VideoPage />
@@ -59,6 +60,15 @@ const App = () => {
           element={
             <ProtectedRoute>
               <UploadPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path='/channel/:channelId'
+          element={
+            <ProtectedRoute>
+              <ChannelPage />
             </ProtectedRoute>
           }
         />

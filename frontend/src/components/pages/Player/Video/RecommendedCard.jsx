@@ -41,7 +41,7 @@ const RecommendedCard = ({ video }) => {
     }
 
     return (
-        <Link to={`/video/${video._id}`} className="flex gap-2 cursor-pointer group hover:opacity-80 transition-opacity">
+        <Link to={`/watch/${video._id}`} className="flex gap-2 cursor-pointer group hover:opacity-80 transition-opacity">
             {/* Thumbnail */}
             <div
                 className="block relative w-28 h-16 bg-black rounded shrink-0 overflow-hidden"

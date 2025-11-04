@@ -76,7 +76,7 @@ const VideoItem = ({ v }) => {
     <div className=' cursor-pointer '>
       {/* Thumbnail Container */}
       <Link
-        to={`/video/${v._id}`} 
+        to={`/watch/${v._id}`} 
         className="block relative w-full bg-black rounded-xl overflow-hidden"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
