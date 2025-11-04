@@ -48,8 +48,6 @@ const Videos = () => {
 		}
 	}, []);
 
-	//Random commit
-
 	//Handle scroll updation
 	useEffect(() => {
 		const handleScroll = () => {
