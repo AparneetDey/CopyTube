@@ -155,7 +155,7 @@ export default function ChannelPage() {
             <p>No community posts yet</p>
           </div>
         )}
-        {activeTab === 'tweets' && <TweetsTab id={channel._id} />}
+        {activeTab === 'tweets' && <TweetsTab channel={channel} />}
       </div>
     </div>
   );
