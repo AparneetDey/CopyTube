@@ -5,6 +5,7 @@ import { Video } from "../models/video.model.js";
 import { User } from "../models/user.model.js";
 import { Like } from "../models/like.model.js";
 import { Tweet } from "../models/tweet.model.js";
+import mongoose from "mongoose";
 
 
 const getChannelStats = asyncHandler( async (req, res) => {
@@ -12,14 +13,16 @@ const getChannelStats = asyncHandler( async (req, res) => {
     // Get total tweets, total likes
     // return res
 
+    const {userId} = req.params;
+
     const totalVideos = await Video.countDocuments({
-        owner: req.user?._id
+        owner: new mongoose.Types.ObjectId(userId)
     });
 
     const totalViews = await Video.aggregate([
         {
             $match: {
-                owner: req.user?._id
+                owner: new mongoose.Types.ObjectId(userId)
             }
         },
         {
@@ -35,7 +38,7 @@ const getChannelStats = asyncHandler( async (req, res) => {
     const totalSubscribers = await User.aggregate([
         {
             $match: {
-                _id: req.user?._id
+                _id: new mongoose.Types.ObjectId(userId)
             }
         },
         {
@@ -63,7 +66,7 @@ const getChannelStats = asyncHandler( async (req, res) => {
 
     const totalLikes = await Like.countDocuments(
         {
-            likedBy: req.user?._id,
+            likedBy: new mongoose.Types.ObjectId(userId),
             video: {
                 $exists: true,
             }
@@ -71,11 +74,11 @@ const getChannelStats = asyncHandler( async (req, res) => {
     )
 
     const totalTweets = await Tweet.countDocuments({
-        owner: req.user?._id
+        owner: new mongoose.Types.ObjectId(userId)
     })
 
     const totalTweetsLikes = await Like.countDocuments({
-        likedBy: req.user?._id,
+        likedBy: new mongoose.Types.ObjectId(userId),
         tweet: {
             $exists: true
         }
