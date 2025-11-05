@@ -2,7 +2,7 @@ import { Settings, Share2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useAuth } from "../../../context/AuthContext"
 
-const ChannelHeader = ({ channel, onAvatarChange, onBannerChange }) => {
+const ChannelHeader = ({ channel, stats, onAvatarChange, onBannerChange }) => {
   const { user } = useAuth();
   const [isSubscribed, setIsSubscribed] = useState(channel?.isSubscribed);
   const [showAvatarUpload, setShowAvatarUpload] = useState(false);
@@ -108,7 +108,9 @@ const ChannelHeader = ({ channel, onAvatarChange, onBannerChange }) => {
                   <span>•</span>
                   <span>{channel.subscribersCount || 0} subscribers</span>
                   <span>•</span>
-                  <span>{channel.videoCount || 0} videos</span>
+                  <span>{stats.totalVideos || 0} videos</span>
+                  <span>•</span>
+                  <span>{stats.totalTweets || 0} tweets</span>
                 </div>
               </div>
             </div>

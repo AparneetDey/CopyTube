@@ -15,6 +15,7 @@ export default function ChannelPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [channel, setChannel] = useState({});
+  const [stats, setStats] = useState({});
 
   const fetchChannel = useCallback(async (username) => {
     setLoading(true);
@@ -25,7 +26,21 @@ export default function ChannelPage() {
       console.log(res.data.data.channel);
       setChannel(res.data.data.channel);
     } catch (error) {
-      console.log("Something went wrong while fetching error ::",error);
+      console.log("Something went wrong while fetching channel ::",error);
+      setErrorMessage("No channel available!");
+    }
+  }, []);
+
+  const fetchStats = useCallback(async (id) => {
+    setLoading(true);
+    setErrorMessage("");
+    try {
+      const res = await api.get(`/dashboard/${id}`);
+
+      console.log(res.data.data);
+      setStats(res.data.data);
+    } catch (error) {
+      console.log("Something went wrong while fetching channel ::",error);
       setErrorMessage("No channel available!");
     }
   }, []);
@@ -33,14 +48,19 @@ export default function ChannelPage() {
   useEffect(() => {
     fetchChannel(username);
   }, [username])
+
+  useEffect(() => {
+    if(Object.keys(channel).length>0) fetchStats(channel._id);
+  }, [channel])
+  
   
 
   const handleAvatarChange = (newAvatar) => {
-    setChannelData(prev => ({ ...prev, avatar: newAvatar }));
+    setChannel(prev => ({ ...prev, avatar: newAvatar }));
   };
 
   const handleBannerChange = (newBanner) => {
-    setChannelData(prev => ({ ...prev, banner: newBanner }));
+    setChannel(prev => ({ ...prev, banner: newBanner }));
   };
 
   const videos = [
@@ -88,47 +108,11 @@ export default function ChannelPage() {
     }
   ];
 
-  const tweets = [
-    {
-      name: 'Tech Tutorials',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop',
-      time: '2h ago',
-      text: 'Just dropped a new React tutorial! 🔥 Learn hooks, context, and custom hooks in one video. Link in bio!',
-      image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=600&h=400&fit=crop',
-      likes: 1245,
-      replies: 89
-    },
-    {
-      name: 'Tech Tutorials',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop',
-      time: '1d ago',
-      text: 'What topic should I cover next? 🤔\n\n1. Advanced TypeScript\n2. Next.js 14\n3. Docker for Beginners\n4. System Design\n\nVote below! 👇',
-      likes: 2341,
-      replies: 234
-    },
-    {
-      name: 'Tech Tutorials',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop',
-      time: '3d ago',
-      text: 'Pro tip: Always write clean, readable code. Your future self will thank you! 💻✨',
-      likes: 892,
-      replies: 45
-    },
-    {
-      name: 'Tech Tutorials',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop',
-      time: '5d ago',
-      text: 'Celebrating 1.2M subscribers! 🎉 Thank you all for the amazing support. Here\'s to many more tutorials together! ❤️',
-      image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&h=400&fit=crop',
-      likes: 5678,
-      replies: 567
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50">
       <ChannelHeader 
         channel={channel} 
+        stats={stats}
         onAvatarChange={handleAvatarChange}
         onBannerChange={handleBannerChange}
       />
