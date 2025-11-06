@@ -26,6 +26,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
                     {
                         $project: {
                             fullName: 1,
+                            username: 1,
                             avatar: 1
                         }
                     }
@@ -244,6 +245,7 @@ const getAVideo = asyncHandler(async (req, res) => {
                     {
                         $project: {
                             fullName: 1,
+                            username: 1,
                             avatar: 1,
                             subscribersCount: 1,
                             isSubscribed: 1

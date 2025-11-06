@@ -8,6 +8,8 @@ const VideoItem = ({ v }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef(null);
 
+  console.log(owner)
+
   const formatDuration = (seconds) => {
     if (!seconds) return '';
     const numSeconds = typeof seconds === 'string' ? parseFloat(seconds) : seconds;
@@ -122,7 +124,7 @@ const VideoItem = ({ v }) => {
       {/* Video Info */}
       <div className="flex gap-3 mt-3">
         {/* Channel Avatar */}
-        <div className="shrink-0">
+        <Link to={`/channel/${owner.username}`} className="shrink-0">
           {owner?.avatar ? (
             <img 
               src={owner.avatar} 
@@ -134,7 +136,7 @@ const VideoItem = ({ v }) => {
               <User className="w-5 h-5 text-gray-600" />
             </div>
           )}
-        </div>
+        </Link>
         
         {/* Video Details */}
         <div className="flex-1 min-w-0">
