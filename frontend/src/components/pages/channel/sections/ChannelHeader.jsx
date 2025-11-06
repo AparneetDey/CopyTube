@@ -1,14 +1,16 @@
 import { Settings, Share2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useAuth } from "../../../context/AuthContext"
+import api from '../../../../services/apiService';
 
 const ChannelHeader = ({ channel, stats, onAvatarChange, onBannerChange }) => {
   const { user } = useAuth();
   const [isSubscribed, setIsSubscribed] = useState(channel?.isSubscribed);
   const [showAvatarUpload, setShowAvatarUpload] = useState(false);
   const [showBannerUpload, setShowBannerUpload] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleAvatarUpload = (e) => {
+  const handleAvatarUpload = async (e) => {
     const file = e.target.files[0];
     if (file && file.type.startsWith('image/')) {
       const reader = new FileReader();
@@ -17,6 +19,16 @@ const ChannelHeader = ({ channel, stats, onAvatarChange, onBannerChange }) => {
         setShowAvatarUpload(false);
       };
       reader.readAsDataURL(file);
+
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      try {
+        const res = await api.patch(`/users/update-avatar`, formData);
+      } catch (error) {
+        console.log("Something went wrong while updating avatar ::", error);
+        setErrorMessage("Can not update avatar");
+      }
     }
   };
 
@@ -49,7 +61,7 @@ const ChannelHeader = ({ channel, stats, onAvatarChange, onBannerChange }) => {
         )}
 
         {/* Banner Upload Overlay */}
-        {(showBannerUpload || !channel?.coverImage) && (
+        {(showBannerUpload || !channel?.coverImage) && user._id===channel._id && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center transition-opacity">
             <label className="cursor-pointer">
               <div className="bg-white bg-opacity-90 hover:bg-opacity-100 px-4 sm:px-6 py-2 sm:py-3 rounded-lg flex items-center gap-2 transition">
@@ -83,7 +95,7 @@ const ChannelHeader = ({ channel, stats, onAvatarChange, onBannerChange }) => {
             />
 
             {/* Avatar Upload Overlay */}
-            {showAvatarUpload && (
+            {showAvatarUpload && user._id===channel._id && (
               <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full cursor-pointer transition-opacity">
                 <Settings className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 <input
