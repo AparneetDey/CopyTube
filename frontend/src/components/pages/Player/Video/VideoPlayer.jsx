@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react"
 import { Play, Pause, Volume2, VolumeX, Settings, Maximize, Loader } from "lucide-react"
 import api from "../../../../services/apiService"
+import { formatDuration } from "../../../functions"
 
 export default function VideoPlayer({ video }) {
   const [isPlaying, setIsPlaying] = useState(false)
@@ -101,22 +102,6 @@ export default function VideoPlayer({ video }) {
       resetHideTimer()
     }
   }
-
-  const formatTime = (seconds) => {
-    if (isNaN(seconds)) return "00:00";
-
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = Math.floor(seconds % 60);
-
-    if (hrs > 0) {
-      return `${hrs}:${mins.toString().padStart(2, "0")}:${secs
-        .toString()
-        .padStart(2, "0")}`;
-    } else {
-      return `${mins}:${secs.toString().padStart(2, "0")}`;
-    }
-  };
 
 
   useEffect(() => {
@@ -255,8 +240,8 @@ export default function VideoPlayer({ video }) {
 
           {/* Timer */}
           <div className="text-xs flex justify-between text-white px-1">
-            <span>{formatTime(videoRef.current?.currentTime || 0)}</span>
-            <span>{formatTime(videoRef.current?.duration || 0)}</span>
+            <span>{formatDuration(videoRef.current?.currentTime || 0)}</span>
+            <span>{formatDuration(videoRef.current?.duration || 0)}</span>
           </div>
 
           {/* Progress Bar */}

@@ -4,6 +4,7 @@ import LoadingSpinner from "../../../loading/LoadingSpinner"
 import { useAuth } from "../../../context/AuthContext"
 import api from "../../../../services/apiService"
 import { handleShare } from "../../../../utils/handleShare"
+import { formatDate, formatValue} from "../../../functions"
 
 export default function VideoInfo({ video }) {
   const { user } = useAuth();
@@ -22,32 +23,6 @@ export default function VideoInfo({ video }) {
       setSubscribersCount(video.owner.subscribersCount)
     }
   }, [video])
-
-
-  function formatViewsAndSubs(val) {
-    if (val < 1000) return val.toString()
-    if (val < 1_000_000) return (val / 1000).toFixed(1).replace(/\.0$/, '') + 'K'
-    if (val < 1_000_000_000) return (val / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M'
-    return (val / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B'
-  }
-
-  function formatDate(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now - date;
-
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-    const years = Math.floor(days / 365)
-
-    if (years > 0) return `${years} day${years > 1 ? "s" : ""} ago`;
-    if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
-    if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
-    if (minutes > 0) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
-    return "just now";
-  }
 
   const toggleLike = async () => {
     try {
@@ -91,7 +66,7 @@ export default function VideoInfo({ video }) {
 
       {/* Video Stats */}
       <div className="text-sm text-gray-600 mb-4">
-        <span>{formatViewsAndSubs(video.views)} views</span>
+        <span>{formatValue(video.views)} views</span>
         <span> • </span>
         <span>{formatDate(video.createdAt)}</span>
       </div>
@@ -104,7 +79,7 @@ export default function VideoInfo({ video }) {
             }`}
         >
           <ThumbsUp className="w-5 h-5" />
-          <span>{formatViewsAndSubs(likes)}</span>
+          <span>{formatValue(likes)}</span>
         </button>
 
         <button className="flex items-center gap-2 px-4 py-2 rounded-full font-semibold bg-gray-200 text-gray-900 hover:bg-gray-300 transition-all">
@@ -135,7 +110,7 @@ export default function VideoInfo({ video }) {
           </div>
           <div>
             <h3 className="font-semibold text-gray-900">{video.owner.fullName || "Unknown"}</h3>
-            <p className="text-sm text-gray-600">{formatViewsAndSubs(subscribersCount)} subscribers</p>
+            <p className="text-sm text-gray-600">{formatValue(subscribersCount)} subscribers</p>
           </div>
         </div>
 

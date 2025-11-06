@@ -44,6 +44,7 @@ export default function CommentsSection({ video }) {
 
         if (res.data.success) {
           setNewComment("");
+          setIsExpanded(true);
           fetchVideoComments();
         }
       } catch (error) {
@@ -60,7 +61,7 @@ export default function CommentsSection({ video }) {
         {/* Only show toggle on mobile/tablet */}
         {isMobileOrTablet && (
           <button
-            className="flex items-center text-gray-700 text-sm font-medium"
+            className="flex items-center text-gray-700 text-sm font-medium cursor-pointer"
             onClick={() => setIsExpanded((prev) => !prev)}
           >
             {isExpanded ? (
