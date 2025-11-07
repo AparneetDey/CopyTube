@@ -8,8 +8,11 @@ const VideosTab = ({id}) => {
   const [videos, setVideos] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("")
+  const [page, setPage] = useState(1);
+	const [hasMore, setHasMore] = useState(true);
 
-  const fetchVideos = useCallback(async (id) => {
+  const fetchVideos = useCallback(async (id, newPage = 1) => {
+    if(loading) return;
     setLoading(true);
     setErrorMessage("");
 
@@ -22,7 +25,15 @@ const VideosTab = ({id}) => {
         }
       });
 
-      setVideos(res.data.data.videos);
+      const newVideos = res.data.data.videos || [];
+			setVideos(prev => newPage === 1 ? newVideos : [...prev, ...newVideos]);
+
+			// ✅ Check actual length instead of just backend flag
+			if (newVideos.length < 12) {
+				setHasMore(false);
+			} else {
+				setHasMore(true);
+			}
     } catch (error) {
       console.log("Something went wrong while fetching ::", error)
       setErrorMessage("No Videos Available");
@@ -31,9 +42,24 @@ const VideosTab = ({id}) => {
     }
   }, [])
 
-  useEffect(() => {
-    fetchVideos(id)
-  }, [id]);
+	//Handle scroll updation
+	useEffect(() => {
+		const handleScroll = () => {
+			const bottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
+			if (bottom && hasMore && !loading) {
+				setPage(prev => prev + 1);
+			}
+		};
+
+		window.addEventListener("scroll", handleScroll);
+		return () => window.removeEventListener("scroll", handleScroll);
+	}, [hasMore, loading]);
+
+
+
+	useEffect(() => {
+		fetchVideos(id, page);
+	}, [page, id, fetchVideos]);
   
   if(loading) return <LoadingSpinner />
 
