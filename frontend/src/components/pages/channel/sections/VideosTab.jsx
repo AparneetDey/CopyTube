@@ -9,7 +9,7 @@ const VideosTab = ({id}) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("")
   const [page, setPage] = useState(1);
-	const [hasMore, setHasMore] = useState(true);
+	const [hasMore, setHasMore] = useState(false);
 
   const fetchVideos = useCallback(async (id, newPage = 1) => {
     if(loading) return;
@@ -25,15 +25,12 @@ const VideosTab = ({id}) => {
         }
       });
 
+      console.log(res.data.data)
+
       const newVideos = res.data.data.videos || [];
 			setVideos(prev => newPage === 1 ? newVideos : [...prev, ...newVideos]);
 
-			// ✅ Check actual length instead of just backend flag
-			if (newVideos.length < 12) {
-				setHasMore(false);
-			} else {
-				setHasMore(true);
-			}
+			setHasMore(res.data.data.hasNextPage)
     } catch (error) {
       console.log("Something went wrong while fetching ::", error)
       setErrorMessage("No Videos Available");
@@ -60,8 +57,6 @@ const VideosTab = ({id}) => {
 	useEffect(() => {
 		fetchVideos(id, page);
 	}, [page, id, fetchVideos]);
-  
-  if(loading) return <LoadingSpinner />
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
@@ -78,6 +73,7 @@ const VideosTab = ({id}) => {
           <VideoCard key={video._id} video={video} />
         ))}
       </div>
+      {loading && <LoadingSpinner />}
     </div>
   );
 }

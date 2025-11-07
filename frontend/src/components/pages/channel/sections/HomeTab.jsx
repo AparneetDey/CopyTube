@@ -75,7 +75,7 @@ const HomeTab = ({ channel }) => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
       <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Popular Video</h2>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <MainPopularCard video={popularVideos[0] || {}} />
+        <MainPopularCard video={popularVideos.length > 0 ? popularVideos[0] : {}} />
 
         <div className="space-y-4">
           {popularVideos?.slice(1, 4).map((video) => (

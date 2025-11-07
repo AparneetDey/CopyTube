@@ -32,12 +32,7 @@ const Videos = () => {
 			const newVideos = res.data.data.videos || [];
 			setVideos(prev => newPage === 1 ? newVideos : [...prev, ...newVideos]);
 
-			// ✅ Check actual length instead of just backend flag
-			if (newVideos.length < 12) {
-				setHasMore(false);
-			} else {
-				setHasMore(true);
-			}
+			setHasMore(res.data.data.hasNextPage)
 
 		} catch (error) {
 			setErrorMessage("No Videos Found");
