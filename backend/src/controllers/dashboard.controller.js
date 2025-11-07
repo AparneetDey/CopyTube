@@ -103,10 +103,11 @@ const getChannelStats = asyncHandler( async (req, res) => {
 })
 
 const getChannelVideos = asyncHandler( async(req, res) => {
+    const {userId} = req.params;
     const channelVideos = await Video.aggregate([
         {
             $match: {
-                owner: req.user?._id
+                owner: new mongoose.Types.ObjectId(userId)
             }
         },
         {

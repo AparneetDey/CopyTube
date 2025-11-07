@@ -1,7 +1,7 @@
 {
   "scripts": {
     "frontend": "npm start --prefix frontend",
-    "backend": "npm start --prefix backend",
+    "backend": "npm run dev --prefix backend",
     "dev": "concurrently \"npm run backend\" \"npm run frontend\""
   },
   "devDependencies": {

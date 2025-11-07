@@ -9,7 +9,7 @@ router.use(verifyToken)
 
 router.route("/:userId").get(getChannelStats);
 
-router.route("/videos").get(getChannelVideos);
+router.route("/videos/:userId").get(getChannelVideos);
 
 
 export default router;
