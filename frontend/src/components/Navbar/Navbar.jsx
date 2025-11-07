@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search, Plus, User, Menu, Video, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext'
 import { useSearch } from '../context/SearchContext'
@@ -16,6 +16,8 @@ const Navbar = () => {
 	const { setSearchQuery } = useSearch();
 	const navigate = useNavigate();
 	const isMobile = useMediaQuery("(max-width: 768px)");
+	const dropDownRef = useRef(null);
+	const sideBarRef = useRef(null);
 
 	const handleSearch = (e) => {
 		e.preventDefault();
@@ -41,17 +43,41 @@ const Navbar = () => {
 		}
 	};
 
+	useEffect(() => {
+		const handleClickOutSide = (e) => {
+			if (dropDownRef.current && !dropDownRef.current.contains(e.target)) {
+				setIsProfileOpen(false)
+			}
+			if (sideBarRef.current && !sideBarRef.current.contains(e.target)) {
+				setIsSidebarOpen(false)
+			}
+			
+		}
+
+		window.addEventListener("mousedown", handleClickOutSide);
+		return () => {
+			window.removeEventListener("mousedown", handleClickOutSide)
+		}
+	}, [])
+
+	useEffect(() => {
+	  setIsProfileOpen(false)
+	  setIsSidebarOpen(false)
+	}, [window.location.pathname])
+	
+
+
 	return (
 		<>
-			<Sidebar isOpen={isSidebarOpen} />
-			<header className='w-full sticky top-0 z-50'>
+			<Sidebar ref={sideBarRef} isOpen={isSidebarOpen} />
+			<header className='w-full sticky top-0 z-1001'>
 				{/* Navbar */}
 				<nav className="bg-blue-600 shadow-lg">
 					<div className="mx-auto px-2 h-fit md:px-6">
 						<div className="flex items-center justify-between h-16">
 							{/* Left Section - Menu & Logo */}
 							<div className={`flex items-center space-x-2 sm:space-x-4 transition-all duration-300 ${isSearchExpanded ? 'opacity-0 md:opacity-100 scale-95 md:scale-100 hidden' : 'opacity-100 scale-100 block'
-										}`}>
+								}`}>
 								<button
 									onClick={() => setIsSidebarOpen(!isSidebarOpen)}
 									className="p-2 hover:bg-blue-700 rounded-full transition cursor-pointer"
@@ -170,7 +196,7 @@ const Navbar = () => {
 
 									{/* Profile Dropdown */}
 									{isProfileOpen && user && (
-										<div className="absolute right-0 mt-4 w-56 bg-white rounded-lg shadow-xl py-2 border border-gray-200 z-50">
+										<div ref={dropDownRef} className="absolute right-0 mt-4 w-56 bg-white rounded-lg shadow-xl py-2 border border-gray-200 z-50">
 											<div className="px-4 py-3 border-b border-gray-200">
 												<p className="text-sm font-semibold text-gray-800">{user.username}</p>
 												<p className="text-xs text-gray-500">{user.email}</p>

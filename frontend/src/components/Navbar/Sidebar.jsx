@@ -2,7 +2,7 @@ import React from 'react';
 import { Home, TrendingUp, Library, History, Clock, ThumbsUp, Settings, Flag, HelpCircle, SubscriptIcon, Twitter } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const Sidebar = ({ isOpen }) => {
+const Sidebar = ({ ref, isOpen }) => {
   const { user, isAuthenticated } = useAuth();
 
   const mainItems = [
@@ -29,12 +29,13 @@ const Sidebar = ({ isOpen }) => {
     <>
       {/* Overlay */}
       {isOpen && (
-        <div className="fixed inset-0 bg-[#0000004f] z-40" />
+        <div className="fixed inset-0 bg-[#0000004f] z-999" />
       )}
       
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 md:top-0 h-full w-64 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out ${
+        ref={ref}
+        className={`fixed left-0 md:top-0 h-full w-64 bg-white shadow-xl z-1000 transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
