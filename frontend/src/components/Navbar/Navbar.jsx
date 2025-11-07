@@ -47,7 +47,7 @@ const Navbar = () => {
 			<header className='w-full sticky top-0 z-50'>
 				{/* Navbar */}
 				<nav className="bg-blue-600 shadow-lg">
-					<div className="mx-auto px-4 h-fit">
+					<div className="mx-auto px-2 h-fit md:px-6">
 						<div className="flex items-center justify-between h-16">
 							{/* Left Section - Menu & Logo */}
 							<div className={`flex items-center space-x-2 sm:space-x-4 transition-all duration-300 ${isSearchExpanded ? 'opacity-0 md:opacity-100 scale-95 md:scale-100 hidden' : 'opacity-100 scale-100 block'
