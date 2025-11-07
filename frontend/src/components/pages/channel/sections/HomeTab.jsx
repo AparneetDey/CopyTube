@@ -6,6 +6,7 @@ import LoadingSpinner from "../../../loading/LoadingSpinner"
 import PopularVideoCard from './PopularVideoCard';
 import { formatDate, formatDuration, formatValue } from "../../../functions"
 import { Link } from 'react-router-dom';
+import MainPopularCard from './MainPopularCard';
 
 const HomeTab = ({ channel }) => {
   const [popularVideos, setPopularVideos] = useState(null);
@@ -23,6 +24,7 @@ const HomeTab = ({ channel }) => {
         params: {
           sortBy: "views",
           sortType: "desc",
+          limit: 4,
           userId: id
         }
       });
@@ -45,7 +47,8 @@ const HomeTab = ({ channel }) => {
         params: {
           sortBy: "createdAt",
           sortType: "desc",
-          userId: id
+          userId: id,
+          limit: 8
         }
       });
 
@@ -72,29 +75,7 @@ const HomeTab = ({ channel }) => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
       <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Popular Video</h2>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <Link to={`/watch/${popularVideos[0]?._id || ""}`}>
-          <div className="relative aspect-video bg-black rounded-lg overflow-hidden mb-2 cursor-pointer group">
-            <img
-              src={popularVideos[0]?.thumbnail}
-              alt={popularVideos[0]?.title}
-              className="w-full h-full object-contain"
-            />
-            <div className="absolute bottom-1 right-1 bg-black bg-opacity-80 text-white text-xs px-1 py-0.5 rounded">
-              {formatDuration(popularVideos[0]?.duration)}
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Play className="w-8 h-8 text-white ml-1" fill="white" />
-              </div>
-            </div>
-          </div>
-          <h3 className="font-semibold text-base sm:text-lg text-gray-900 mb-1">
-            {popularVideos[0]?.title}
-          </h3>
-          <p className="text-sm text-gray-600">
-            {formatValue(popularVideos[0]?.views)} views • {formatDate(popularVideos[0].createdAt)}
-          </p>
-        </Link>
+        <MainPopularCard video={popularVideos[0] || {}} />
 
         <div className="space-y-4">
           {popularVideos?.slice(1, 4).map((video) => (

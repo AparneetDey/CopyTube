@@ -76,7 +76,7 @@ export default function ChannelPage() {
       
       <div className="pb-8">
         {activeTab === 'home' && <HomeTab channel={channel} />}
-        {activeTab === 'videos' && <VideosTab channel={channel} />}
+        {activeTab === 'videos' && <VideosTab id={channel._id} />}
         {activeTab === 'playlists' && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 text-center text-gray-600">
             <Video className="w-16 h-16 mx-auto mb-4 text-gray-400" />

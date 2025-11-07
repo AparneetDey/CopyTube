@@ -1,6 +1,6 @@
 import { Play } from 'lucide-react';
 import React from 'react'
-import { formatDate, formatValue } from '../../../functions';
+import { formatDate, formatDuration, formatValue } from '../../../functions';
 import { Link } from 'react-router-dom';
 
 const VideoCard = ({ video }) => {
@@ -14,7 +14,7 @@ const VideoCard = ({ video }) => {
             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
           />
           <div className="absolute bottom-2 right-2 bg-black bg-opacity-80 text-white text-xs px-1.5 py-0.5 rounded">
-            {video.duration}
+            {formatDuration(video.duration)}
           </div>
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
             <Play className="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
