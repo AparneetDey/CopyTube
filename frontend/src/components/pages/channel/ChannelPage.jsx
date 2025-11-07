@@ -22,8 +22,6 @@ export default function ChannelPage() {
     setErrorMessage("");
     try {
       const res = await api.get(`/users/c/${username}`);
-
-      console.log(res.data.data.channel);
       setChannel(res.data.data.channel);
     } catch (error) {
       console.log("Something went wrong while fetching channel ::",error);
@@ -36,8 +34,6 @@ export default function ChannelPage() {
     setErrorMessage("");
     try {
       const res = await api.get(`/dashboard/channel/${id}`);
-
-      console.log(res.data.data);
       setStats(res.data.data);
     } catch (error) {
       console.log("Something went wrong while fetching channel ::",error);
@@ -119,8 +115,8 @@ export default function ChannelPage() {
       <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
       
       <div className="pb-8">
-        {activeTab === 'home' && <HomeTab videos={videos} />}
-        {activeTab === 'videos' && <VideosTab videos={videos} />}
+        {activeTab === 'home' && <HomeTab channel={channel} />}
+        {activeTab === 'videos' && <VideosTab channel={channel} />}
         {activeTab === 'playlists' && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 text-center text-gray-600">
             <Video className="w-16 h-16 mx-auto mb-4 text-gray-400" />

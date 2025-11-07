@@ -15,8 +15,6 @@ const getChannelStats = asyncHandler( async (req, res) => {
 
     const {userId} = req.params;
 
-    console.log(userId)
-
     if(!userId) return new ApiError(404, "User Id is Required");
 
     const totalVideos = await Video.countDocuments({
@@ -110,8 +108,6 @@ const getChannelVideos = asyncHandler( async(req, res) => {
     const { page = 1, limit = 12, sortBy, sortType, userId } = req.query;
 
     if(!userId) return new ApiError(404, "User Id is Required");
-
-    console.log(userId)
 
     const pipeline = [
         {

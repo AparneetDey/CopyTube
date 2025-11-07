@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import TweetCard from './TweetCard';
 import api from '../../../../services/apiService';
+import LoadingSpinner from '../../../loading/LoadingSpinner';
 
 const TweetsTab = ({ channel }) => {
   const [tweets, setTweets] = useState([]);
@@ -12,8 +13,6 @@ const TweetsTab = ({ channel }) => {
     setErrorMessage("");
     try {
       const res = await api.get(`/tweets/t/c/${id}`);
-
-      console.log(res.data.data);
       setTweets(res.data.data)
     } catch (error) {
       console.log("Something went wrong while fetching tweets ::", error);
@@ -24,6 +23,8 @@ const TweetsTab = ({ channel }) => {
   useEffect(() => {
     fetchTweets(channel._id)
   }, [channel])
+
+  if(loading) return <LoadingSpinner />
   
 
   return (

@@ -24,12 +24,12 @@ export default function Share({ type, title, url, description }) {
   };
 
   return (
-    <button
+    <div
       onClick={handleShare}
       className="flex items-center gap-2 px-3 py-2 rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-all"
     >
       {copied ? <Check className="w-4 h-4 text-green-500" /> : <Share2 className="w-4 h-4" />}
       <span className="text-sm font-medium">{copied ? "Copied!" : "Share"}</span>
-    </button>
+    </div>
   );
 }

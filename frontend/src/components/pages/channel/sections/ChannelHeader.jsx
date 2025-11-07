@@ -142,7 +142,7 @@ const ChannelHeader = ({ channel, stats, onAvatarChange, onBannerChange }) => {
                 {isSubscribed ? 'Subscribed' : 'Subscribe'}
               </button>
             )}
-            <button className="p-2 hover:bg-gray-100 rounded-full transition">
+            <button className="p-2 hover:bg-gray-100 rounded-full transition cursor-pointer">
               <Share
                 type="channel"
                 title={channel.fullName}
