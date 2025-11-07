@@ -7,9 +7,9 @@ const router = Router();
 router.use(verifyToken)
 
 
-router.route("/:userId").get(getChannelStats);
+router.route("/channel/:userId").get(getChannelStats);
 
-router.route("/videos/:userId").get(getChannelVideos);
+router.route("/videos/").get(getChannelVideos);
 
 
 export default router;

@@ -4,9 +4,7 @@ const TabNavigation = ({ activeTab, setActiveTab }) => {
     const tabs = [
       { id: 'home', label: 'Home' },
       { id: 'videos', label: 'Videos' },
-      { id: 'shorts', label: 'Shorts' },
       { id: 'playlists', label: 'Playlists' },
-      { id: 'community', label: 'Community' },
       { id: 'tweets', label: 'Tweets' },
     ];
   
@@ -18,7 +16,7 @@ const TabNavigation = ({ activeTab, setActiveTab }) => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`py-3 px-2 text-sm sm:text-base font-medium whitespace-nowrap transition ${
+                className={`py-3 px-2 text-sm sm:text-base font-medium whitespace-nowrap transition cursor-pointer ${
                   activeTab === tab.id
                     ? 'text-gray-900 border-b-2 border-gray-900'
                     : 'text-gray-600 hover:text-gray-900'
