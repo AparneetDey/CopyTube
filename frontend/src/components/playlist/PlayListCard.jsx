@@ -11,7 +11,7 @@ const PlayListCard = ({playlist, toggleVideoInPlaylist}) => {
             <div className="relative shrink-0">
                 <input
                     type="checkbox"
-                    checked={playlist.isVideoSaved}
+                    checked={!!playlist.isVideoSaved}
                     onChange={() => toggleVideoInPlaylist(playlist._id)}
                     className="w-5 h-5 text-blue-600 border-gray-300 rounded cursor-pointer focus:outline-none focus:ring-0 focus:ring-offset-0 active:ring-0"
                 />

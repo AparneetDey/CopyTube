@@ -23,18 +23,7 @@ function SaveToPlaylistModal() {
 		try {
 			const res = await api.get(`/playlists/p/user/${id}`)
 
-			// Get playlists from response
-			const playlists = res.data?.data || [];
-
-			// ✅ Add isVideoSaved flag to each playlist
-			const updatedPlaylists = playlists.map((playlist) => ({
-				...playlist,
-				isVideoSaved: videoData.id
-					? playlist.videos?.some((v) => v._id === videoData.id) // check if video exists
-					: false, // default false if no video provided
-			}));
-
-			setPlaylists(updatedPlaylists); // store in state
+			setPlaylists(res.data?.data);
 		} catch (error) {
 			console.log("Something went wrong while fetching playlists ::", error);
 			setErrorMessage("No Play List Available");
@@ -45,8 +34,80 @@ function SaveToPlaylistModal() {
 
 	useEffect(() => {
 		if (user) fetchPlayLists(user._id)
-	}, [user])
+	}, [user, fetchPlayLists])
 
+	useEffect(() => {
+		if (!videoData?.id) return;
+	
+		setPlaylists((prevPlaylists) =>
+			prevPlaylists.map((playlist) => ({
+				...playlist,
+				isVideoSaved: playlist.videos.includes(videoData.id),
+			}))
+		);
+	}, [videoData]);
+
+	const handleSavePlayList = async () => {
+		try {
+			// Use Promise.all to handle async requests properly
+			await Promise.all(
+				playlists.map(async (playlist) => {
+					if (playlist.isVideoSaved) {
+						// ADD video if not already in playlist
+						if (!playlist.videos.includes(videoData.id)) {
+							try {
+								const res = await api.patch(`/playlists/p/add/${playlist._id}/${videoData.id}`);
+								if (res.data.success) {
+									setPlaylists((prev) =>
+										prev.map((p) =>
+											p._id === playlist._id
+												? {
+														...p,
+														isVideoSaved: true,
+														videoCount: p.videoCount + 1,
+													}
+												: p
+										)
+									);
+								}
+							} catch (error) {
+								console.log("Error saving video in playlist:", error);
+							}
+						}
+					} else {
+						// REMOVE video if it exists in playlist
+						if (playlist.videos.includes(videoData.id)) {
+							try {
+								const res = await api.patch(`/playlists/p/remove/${playlist._id}/${videoData.id}`);
+								if (res.data.success) {
+									setPlaylists((prev) =>
+										prev.map((p) =>
+											p._id === playlist._id
+												? {
+														...p,
+														isVideoSaved: false,
+														videoCount: Math.max(p.videoCount - 1, 0),
+													}
+												: p
+										)
+									);
+								}
+							} catch (error) {
+								console.log("Error removing video from playlist:", error);
+							}
+						}
+					}
+				})
+			);
+	
+			// Refresh playlists after all API calls finish
+			await fetchPlayLists(user._id);
+			handleClosePlayList();
+		} catch (error) {
+			console.log("Something went wrong while saving playlists:", error);
+		}
+	};
+	
 
 	const toggleVideoInPlaylist = (playlistId) => {
 		setPlaylists((prevPlaylists) =>
@@ -65,7 +126,6 @@ function SaveToPlaylistModal() {
 			})
 		);
 	};
-	
 
 	const handleCreatePlaylist = async () => {
 		const formData = {
@@ -95,11 +155,12 @@ function SaveToPlaylistModal() {
 	let filteredPlaylists = playlists.filter(playlist =>
 		playlist.name.toLowerCase().includes(searchQuery.toLowerCase())
 	);
-
 	useEffect(() => {
 		filteredPlaylists = playlists.filter(playlist =>
 			playlist.name.toLowerCase().includes(searchQuery.toLowerCase())
 		);
+
+		// console.log(filteredPlaylists)
 	}, [searchQuery, playlists])
 
   useEffect(() => {
@@ -113,10 +174,8 @@ function SaveToPlaylistModal() {
       document.body.style.overflow = ""; // cleanup on unmount
     };
   }, [isOpen]);
-	
-	if (!isOpen) return null;
 
-	
+	if (!isOpen) return null;
 
 	return (
 		<div className="fixed inset-0 z-500 flex items-start justify-center pt-16 sm:pt-20 px-4">
@@ -229,7 +288,7 @@ function SaveToPlaylistModal() {
 				{/* Footer */}
 				<div className="p-3 sm:p-4 border-t border-gray-200 bg-gray-50">
 					<button
-						onClick={() => handleClosePlayList()}
+						onClick={() => handleSavePlayList()}
 						className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition text-sm sm:text-base"
 					>
 						Done
