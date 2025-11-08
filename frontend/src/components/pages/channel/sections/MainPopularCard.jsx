@@ -3,8 +3,11 @@ import { Link } from 'react-router-dom'
 import { formatDate, formatDuration, formatValue } from '../../../functions'
 import { Bookmark, EllipsisVertical, Play, Share2 } from 'lucide-react'
 import Share, { handleShare } from '../../../../utils/Share'
+import { usePlayList } from '../../../context/PlayListContext'
 
 const MainPopularCard = ({ video }) => {
+    const {handleOpenPlayList} = usePlayList();
+
     const [isExpanded, setIsExpanded] = useState(false);
     const dropDownRef = useRef(null);
 
@@ -57,7 +60,10 @@ const MainPopularCard = ({ video }) => {
 
                     {isExpanded && (
                         <div ref={dropDownRef} className="absolute right-0 mt-4 w-48 bg-white rounded-lg shadow-xl py-2 border border-gray-200 z-50">
-                            <div className="px-4 py-3 flex gap-2 items-center cursor-pointer hover:bg-gray-300 transition-all duration-100">
+                            <div
+                                onClick={() => handleOpenPlayList(video._id, video.title)}
+                                className="px-4 py-3 flex gap-2 items-center cursor-pointer hover:bg-gray-300 transition-all duration-100"
+                            >
                                 <Bookmark />
                                 <p className="text-sm text-gray-500">Save to playlist</p>
                             </div>

@@ -4,12 +4,15 @@ import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './components/context/AuthContext.jsx';
 import { SearchProvider } from './components/context/SearchContext.jsx';
+import { PlayListProvider } from './components/context/PlayListContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <AuthProvider>
       <SearchProvider>
-        <App />
+        <PlayListProvider>
+          <App />
+        </PlayListProvider>
       </SearchProvider>
     </AuthProvider>
   </BrowserRouter>
