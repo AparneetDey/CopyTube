@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { X, Plus, Check, Lock, Globe, List, Search } from 'lucide-react';
 import { usePlayList } from '../context/PlayListContext';
+import {useAuth} from "../context/AuthContext";
+import api from '../../services/apiService';
 
 function SaveToPlaylistModal() {
-	const {isOpen, handleClosePlayList, videoData} = usePlayList();
+	const {user} = useAuth();
+	const { isOpen, handleClosePlayList, videoData } = usePlayList();
 
 	const [playlists, setPlaylists] = useState([
 		{
@@ -42,11 +45,32 @@ function SaveToPlaylistModal() {
 			isVideoSaved: true
 		}
 	]);
-
+	const [loading, setLoading] = useState(false);
+	const [errorMessage, setErrorMessage] = useState("");
 	const [searchQuery, setSearchQuery] = useState('');
 	const [isCreatingNew, setIsCreatingNew] = useState(false);
 	const [newPlaylistName, setNewPlaylistName] = useState('');
 	const [newPlaylistPrivacy, setNewPlaylistPrivacy] = useState('private');
+
+	const fetchPlayLists = useCallback(async (id) => {
+		setLoading(true);
+		setErrorMessage("");
+		try {
+			const res = await api.get(`/playlists/p/user/${id}`);
+
+			console.log(res.data.data);
+		} catch (error) {
+			console.log("Something went wrong while fetching playlists ::", error);
+			setErrorMessage("No Play List Available");
+		} finally {
+			setLoading(false)
+		}
+	}, [])
+
+	useEffect(() => {
+		if(user) fetchPlayLists(user._id)
+	}, [user])
+	
 
 	const toggleVideoInPlaylist = (playlistId) => {
 		setPlaylists(prevPlaylists =>
