@@ -3,8 +3,10 @@ import { Video, User, EllipsisVertical, Bookmark, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatDate, formatDuration, formatValue } from '../functions';
 import { handleShare } from '../../utils/Share';
+import { usePlayList } from '../context/PlayListContext';
 
 const VideoItem = ({ v }) => {
+  const {handleOpenPlayList} = usePlayList();
   const { title, owner, thumbnail, videoFile, duration, views, createdAt } = v;
   const [hoverTimer, setHoverTimer] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -138,10 +140,13 @@ const VideoItem = ({ v }) => {
 
           {isExpanded && (
             <div ref={dropDownRef} className="absolute right-0 mt-4 w-48 bg-white rounded-lg shadow-xl py-2 border border-gray-200 z-50">
-              <div className="px-4 py-3 flex gap-2 items-center cursor-pointer hover:bg-gray-300 transition-all duration-100">
+              <button
+                onClick={() => handleOpenPlayList(v._id, v.title)}
+                className="px-4 py-3 w-full flex gap-2 items-center cursor-pointer hover:bg-gray-300 transition-all duration-100"
+              >
                 <Bookmark />
                 <p className="text-sm text-gray-500">Save to playlist</p>
-              </div>
+              </button>
               <button 
                 onClick={() => handleShare(
                   v.title, `${window.location.origin}/watch/${v._id}`, v.description
