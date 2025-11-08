@@ -1,64 +1,40 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { X, Plus, Check, Lock, Globe, List, Search } from 'lucide-react';
 import { usePlayList } from '../context/PlayListContext';
-import {useAuth} from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import api from '../../services/apiService';
+import PlayListCard from './PlayListCard';
 
 function SaveToPlaylistModal() {
-	const {user} = useAuth();
+	const { user } = useAuth();
 	const { isOpen, handleClosePlayList, videoData } = usePlayList();
 
-	const [playlists, setPlaylists] = useState([
-		{
-			id: 1,
-			name: 'Watch Later',
-			videoCount: 12,
-			privacy: 'private',
-			isVideoSaved: false
-		},
-		{
-			id: 2,
-			name: 'Favorites',
-			videoCount: 45,
-			privacy: 'private',
-			isVideoSaved: true
-		},
-		{
-			id: 3,
-			name: 'React Tutorials',
-			videoCount: 23,
-			privacy: 'public',
-			isVideoSaved: false
-		},
-		{
-			id: 4,
-			name: 'JavaScript Learning',
-			videoCount: 34,
-			privacy: 'unlisted',
-			isVideoSaved: false
-		},
-		{
-			id: 5,
-			name: 'Web Development',
-			videoCount: 67,
-			privacy: 'public',
-			isVideoSaved: true
-		}
-	]);
+	const [playlists, setPlaylists] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [errorMessage, setErrorMessage] = useState("");
 	const [searchQuery, setSearchQuery] = useState('');
 	const [isCreatingNew, setIsCreatingNew] = useState(false);
 	const [newPlaylistName, setNewPlaylistName] = useState('');
-	const [newPlaylistPrivacy, setNewPlaylistPrivacy] = useState('private');
+	const [newPlaylistDescription, setNewPlaylistDescription] = useState("");
 
 	const fetchPlayLists = useCallback(async (id) => {
 		setLoading(true);
 		setErrorMessage("");
 		try {
-			const res = await api.get(`/playlists/p/user/${id}`);
+			const res = await api.get(`/playlists/p/user/${id}`)
 
-			console.log(res.data.data);
+			// Get playlists from response
+			const playlists = res.data?.data || [];
+
+			// ✅ Add isVideoSaved flag to each playlist
+			const updatedPlaylists = playlists.map((playlist) => ({
+				...playlist,
+				isVideoSaved: videoData.id
+					? playlist.videos?.some((v) => v._id === videoData.id) // check if video exists
+					: false, // default false if no video provided
+			}));
+
+			setPlaylists(updatedPlaylists); // store in state
 		} catch (error) {
 			console.log("Something went wrong while fetching playlists ::", error);
 			setErrorMessage("No Play List Available");
@@ -68,46 +44,79 @@ function SaveToPlaylistModal() {
 	}, [])
 
 	useEffect(() => {
-		if(user) fetchPlayLists(user._id)
+		if (user) fetchPlayLists(user._id)
 	}, [user])
-	
+
 
 	const toggleVideoInPlaylist = (playlistId) => {
-		setPlaylists(prevPlaylists =>
-			prevPlaylists.map(playlist =>
-				playlist.id === playlistId
-					? {
+		setPlaylists((prevPlaylists) =>
+			prevPlaylists.map((playlist) => {
+				if (playlist._id === playlistId) {
+					const newIsSaved = !playlist.isVideoSaved;
+					return {
 						...playlist,
-						isVideoSaved: !playlist.isVideoSaved,
-						videoCount: playlist.isVideoSaved
-							? playlist.videoCount - 1
-							: playlist.videoCount + 1
-					}
-					: playlist
-			)
+						isVideoSaved: newIsSaved,
+						videoCount: newIsSaved
+							? playlist.videoCount + 1
+							: Math.max(playlist.videoCount - 1, 0), // prevent negatives
+					};
+				}
+				return playlist;
+			})
 		);
 	};
+	
 
-	const handleCreatePlaylist = () => {
-		if (newPlaylistName.trim()) {
-			const newPlaylist = {
-				id: playlists.length + 1,
-				name: newPlaylistName,
-				videoCount: 1,
-				privacy: newPlaylistPrivacy,
-				isVideoSaved: true
-			};
-			setPlaylists([newPlaylist, ...playlists]);
-			setNewPlaylistName('');
-			setIsCreatingNew(false);
+	const handleCreatePlaylist = async () => {
+		const formData = {
+			name: newPlaylistName,
+			description: newPlaylistDescription
+		}
+		try {
+			const res = await api.post("/playlists/", formData);
+
+			if (res.data.success) {
+				const newPlaylist = {
+					id: res.data.data._id,
+					name: newPlaylistName,
+					videoCount: 1,
+					isVideoSaved: true
+				};
+				setPlaylists([newPlaylist, ...playlists]);
+				setNewPlaylistName('');
+				setNewPlaylistDescription("");
+				setIsCreatingNew(false);
+			}
+		} catch (error) {
+			console.log("Something went wrong while creating playlist ::", error)
 		}
 	};
 
-	const filteredPlaylists = playlists.filter(playlist =>
+	let filteredPlaylists = playlists.filter(playlist =>
 		playlist.name.toLowerCase().includes(searchQuery.toLowerCase())
 	);
 
+	useEffect(() => {
+		filteredPlaylists = playlists.filter(playlist =>
+			playlist.name.toLowerCase().includes(searchQuery.toLowerCase())
+		);
+	}, [searchQuery, playlists])
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden"; // ❌ disable scroll
+    } else {
+      document.body.style.overflow = ""; // ✅ restore scroll
+    }
+
+    return () => {
+      document.body.style.overflow = ""; // cleanup on unmount
+    };
+  }, [isOpen]);
+	
 	if (!isOpen) return null;
+
+	
 
 	return (
 		<div className="fixed inset-0 z-500 flex items-start justify-center pt-16 sm:pt-20 px-4">
@@ -174,17 +183,14 @@ function SaveToPlaylistModal() {
 								className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none mb-2 text-sm sm:text-base"
 								autoFocus
 							/>
-							<div className="flex items-center gap-2 mb-3">
-								<select
-									value={newPlaylistPrivacy}
-									onChange={(e) => setNewPlaylistPrivacy(e.target.value)}
-									className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
-								>
-									<option value="private">Private</option>
-									<option value="unlisted">Unlisted</option>
-									<option value="public">Public</option>
-								</select>
-							</div>
+							<textarea
+								type="text"
+								value={newPlaylistDescription}
+								onChange={(e) => setNewPlaylistDescription(e.target.value)}
+								placeholder="Enter playlist description"
+								className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none mb-2 text-sm sm:text-base"
+								rows={3}
+							/>
 							<div className="flex items-center gap-2">
 								<button
 									onClick={handleCreatePlaylist}
@@ -210,52 +216,7 @@ function SaveToPlaylistModal() {
 					<div className="divide-y divide-gray-100">
 						{filteredPlaylists.length > 0 ? (
 							filteredPlaylists.map((playlist) => (
-								<label
-									key={playlist.id}
-									className="flex items-center gap-3 px-4 sm:px-5 py-3 hover:bg-gray-50 transition cursor-pointer"
-								>
-									{/* Checkbox */}
-									<div className="relative shrink-0">
-										<input
-											type="checkbox"
-											checked={playlist.isVideoSaved}
-											onChange={() => toggleVideoInPlaylist(playlist.id)}
-											className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
-										/>
-										{playlist.isVideoSaved && (
-											<Check className="absolute inset-0 w-5 h-5 text-blue-600 pointer-events-none" />
-										)}
-									</div>
-
-									{/* Playlist Icon */}
-									<div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-200 rounded flex items-center justify-center shrink-0">
-										<List className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
-									</div>
-
-									{/* Playlist Info */}
-									<div className="flex-1 min-w-0">
-										<h3 className="text-sm sm:text-base font-medium text-gray-900 truncate">
-											{playlist.name}
-										</h3>
-										<div className="flex items-center gap-2 mt-0.5">
-											<span className="text-xs text-gray-600">
-												{playlist.videoCount} video{playlist.videoCount !== 1 ? 's' : ''}
-											</span>
-											<span className="text-gray-400">•</span>
-											<div className="flex items-center gap-1">
-												{playlist.privacy === 'private' && (
-													<Lock className="w-3 h-3 text-gray-500" />
-												)}
-												{playlist.privacy === 'public' && (
-													<Globe className="w-3 h-3 text-gray-500" />
-												)}
-												<span className="text-xs text-gray-600 capitalize">
-													{playlist.privacy}
-												</span>
-											</div>
-										</div>
-									</div>
-								</label>
+								<PlayListCard key={playlist._id} playlist={playlist} toggleVideoInPlaylist={toggleVideoInPlaylist} />
 							))
 						) : (
 							<div className="px-4 sm:px-5 py-8 text-center text-gray-500 text-sm">
