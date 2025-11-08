@@ -2,6 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Playlist } from "../models/playlist.model.js";
+import mongoose from "mongoose";
 
 
 const createPlayList = asyncHandler(async (req, res) => {
@@ -33,9 +34,20 @@ const getUserPlayLists = asyncHandler(async (req, res) => {
 
     if (!userId) throw new ApiError(400, "User Id is Required");
 
-    const userPlayList = await Playlist.find({
-        owner: userId
-    });
+    const userPlayList = await Playlist.aggregate([
+        {
+            $match: {
+                owner: new mongoose.Types.ObjectId(userId)
+            }
+        },
+        {
+            $addFields: {
+                videoCount: {
+                    $size: "$videos"
+                }
+            }
+        }
+    ])
 
     if (!userPlayList) throw new ApiError(500, "Something went wrong while fetching the user's playlist");
 
