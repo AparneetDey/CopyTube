@@ -41,6 +41,23 @@ const getUserPlayLists = asyncHandler(async (req, res) => {
             }
         },
         {
+            $lookup: {
+                from: "videos",
+                localField: "videos",
+                foreignField: "_id",
+                as: "videoDetail",
+                pipeline: [
+                    {
+                        $project: {
+                            thumbnail: 1,
+                            title: 1,
+                            createdAt: 1
+                        }
+                    }
+                ]
+            }
+        },
+        {
             $addFields: {
                 videoCount: {
                     $size: "$videos"
