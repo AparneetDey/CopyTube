@@ -27,8 +27,10 @@ const Navbar = () => {
 	};
 
 	const handleSignOut = async () => {
+    console.log("signout")
 		try {
-			await api.get("/users/logout");
+			const res = await api.get("/users/logout");
+      localStorage.removeItem("token");
 			await getCurrentUser();
 			navigate("/auth");
 		} catch (error) {

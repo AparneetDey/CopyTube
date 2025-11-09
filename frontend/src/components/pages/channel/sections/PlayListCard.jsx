@@ -3,8 +3,11 @@ import { handleShare } from '../../../../utils/Share'
 import { EllipsisVertical, List, Play, Share2, Trash } from 'lucide-react'
 import { formatDate } from '../../../functions';
 import { Link } from 'react-router-dom';
+import api from '../../../../services/apiService';
+import { useAuth } from '../../../context/AuthContext';
 
-const PlayListCard = ({ playlist }) => {
+const PlayListCard = ({ playlist, setDeleted }) => {
+	const { user } = useAuth();
 
 	const [isExpanded, setIsExpanded] = useState(false);
 	const dropDownRef = useRef(null);
@@ -21,6 +24,18 @@ const PlayListCard = ({ playlist }) => {
 			window.removeEventListener("mousedown", handleClickOutSide)
 		}
 	}, [])
+
+	const handlePlayListDelete = async (id) => {
+		try {
+			const res = await api.delete(`/playlists/p/delete/${id}`);
+
+			if (res.data.success) {
+				setDeleted(true);
+			}
+		} catch (error) {
+			console.log("Something went wrong while deleting the playlist ::", error)
+		}
+	}
 
 	return (
 		<div
@@ -82,12 +97,15 @@ const PlayListCard = ({ playlist }) => {
 
 					{isExpanded && (
 						<div ref={dropDownRef} className="absolute right-0 mt-4 w-48 bg-white rounded-lg shadow-xl py-2 border border-gray-200 z-50">
-							<button
-								className="px-4 py-3 w-full flex gap-2 items-center cursor-pointer hover:bg-gray-300 transition-all duration-100"
-							>
-								<Trash />
-								<p className="text-sm text-gray-500">Delete playlist</p>
-							</button>
+							{user?._id === playlist.owner && (
+								<button
+									onClick={() => handlePlayListDelete(playlist._id)}
+									className="px-4 py-3 w-full flex gap-2 items-center cursor-pointer hover:bg-gray-300 transition-all duration-100"
+								>
+									<Trash />
+									<p className="text-sm text-gray-500">Delete playlist</p>
+								</button>
+							)}
 							<button
 								onClick={() => handleShare(
 									playlist.name, `${window.location.origin}/playlist/${playlist._id}`, playlist.description

@@ -7,6 +7,7 @@ const PlayListTab = ({ id }) => {
 	const [playlists, setPlaylists] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [errorMessage, setErrorMessage] = useState("");
+	const [deleted, setDeleted] = useState(false);
 
 	const fetchPlayLists = useCallback(async (id) => {
 		setLoading(true);
@@ -23,11 +24,12 @@ const PlayListTab = ({ id }) => {
 	});
 
 	useEffect(() => {
-		fetchPlayLists(id)
-	}, [id, fetchPlayLists])
+		fetchPlayLists(id);
+		setDeleted(false)
+	}, [id, deleted, fetchPlayLists])
 
 	return (
-		<div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+		<div className="max-w-7xl mx-auto px-4 mb-25 sm:px-6 py-6">
 			<div className="flex items-center justify-between mb-6">
 				<h2 className="text-lg sm:text-xl font-semibold text-gray-900">Created Playlists</h2>
 			</div>
@@ -35,7 +37,7 @@ const PlayListTab = ({ id }) => {
 			{playlists && playlists.length > 0 ? (
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 					{playlists.map((playlist) => (
-						<PlayListCard key={playlist._id} playlist={playlist} />
+						<PlayListCard key={playlist._id} playlist={playlist} setDeleted={setDeleted} />
 					))}
 				</div>
 			) : (

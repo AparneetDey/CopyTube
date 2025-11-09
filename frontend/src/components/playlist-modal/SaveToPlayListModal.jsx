@@ -54,7 +54,7 @@ function SaveToPlaylistModal() {
 				playlists.map(async (playlist) => {
 					if (playlist.isVideoSaved) {
 						// ADD video if not already in playlist
-						if ( playlist.videos.length>0 && !playlist.videos.includes(videoData.id)) {
+						if (!playlist.videos?.includes(videoData.id)) {
 							try {
 								const res = await api.patch(`/playlists/p/add/${playlist._id}/${videoData.id}`);
 								if (res.data.success) {
@@ -76,7 +76,7 @@ function SaveToPlaylistModal() {
 						}
 					} else {
 						// REMOVE video if it exists in playlist
-						if (playlist.videos.length>0 && playlist.videos.includes(videoData.id)) {
+						if (playlist.videos?.includes(videoData.id)) {
 							try {
 								const res = await api.patch(`/playlists/p/remove/${playlist._id}/${videoData.id}`);
 								if (res.data.success) {
@@ -137,10 +137,11 @@ function SaveToPlaylistModal() {
 
 			if (res.data.success) {
 				const newPlaylist = {
-					id: res.data.data._id,
+					_id: res.data.data._id,
 					name: newPlaylistName,
 					videoCount: 1,
-					isVideoSaved: true
+					isVideoSaved: true,
+					videos: []
 				};
 				setPlaylists([newPlaylist, ...playlists]);
 				setNewPlaylistName('');
