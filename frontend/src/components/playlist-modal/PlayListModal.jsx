@@ -1,7 +1,7 @@
 import { List } from 'lucide-react'
 import React from 'react'
 
-const PlayListCard = ({playlist, toggleVideoInPlaylist}) => {
+const PlayListModal = ({playlist, toggleVideoInPlaylist}) => {
     return (
         <label
             key={playlist._id}
@@ -37,4 +37,4 @@ const PlayListCard = ({playlist, toggleVideoInPlaylist}) => {
     )
 }
 
-export default PlayListCard
+export default PlayListModal

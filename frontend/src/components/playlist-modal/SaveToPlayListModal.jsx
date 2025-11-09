@@ -3,7 +3,7 @@ import { X, Plus, Check, Lock, Globe, List, Search } from 'lucide-react';
 import { usePlayList } from '../context/PlayListContext';
 import { useAuth } from "../context/AuthContext";
 import api from '../../services/apiService';
-import PlayListCard from './PlayListCard';
+import PlayListModal from './PlayListModal';
 
 function SaveToPlaylistModal() {
 	const { user } = useAuth();
@@ -275,7 +275,7 @@ function SaveToPlaylistModal() {
 					<div className="divide-y divide-gray-100">
 						{filteredPlaylists.length > 0 ? (
 							filteredPlaylists.map((playlist) => (
-								<PlayListCard key={playlist._id} playlist={playlist} toggleVideoInPlaylist={toggleVideoInPlaylist} />
+								<PlayListModal key={playlist._id} playlist={playlist} toggleVideoInPlaylist={toggleVideoInPlaylist} />
 							))
 						) : (
 							<div className="px-4 sm:px-5 py-8 text-center text-gray-500 text-sm">

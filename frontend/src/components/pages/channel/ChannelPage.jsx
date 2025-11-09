@@ -8,6 +8,7 @@ import VideosTab from './sections/VideosTab';
 import { useParams } from "react-router-dom";
 import api from '../../../services/apiService';
 import LoadingSpinner from '../../loading/LoadingSpinner';
+import PlayListTab from './sections/PlayListTab';
 
 // Main Channel Page Component
 export default function ChannelPage() {
@@ -77,12 +78,7 @@ export default function ChannelPage() {
       <div className="pb-8">
         {activeTab === 'home' && <HomeTab channel={channel} />}
         {activeTab === 'videos' && <VideosTab id={channel._id} />}
-        {activeTab === 'playlists' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 text-center text-gray-600">
-            <Video className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <p>No playlists created yet</p>
-          </div>
-        )}
+        {activeTab === 'playlists' && <PlayListTab id={channel._id} />}
         {activeTab === 'tweets' && <TweetsTab channel={channel} />}
       </div>
     </div>

@@ -13,7 +13,7 @@ import Home from './components/pages/Home/Home';
 import VideoPage from './components/pages/Player/VideoPage';
 import UploadPage from './components/pages/Upload/UploadPage';
 import ChannelPage from "./components/pages/channel/ChannelPage"
-import SaveToPlaylistModal from './components/playlist/SaveToPlayListModal';
+import SaveToPlaylistModal from "./components/playlist-modal/SaveToPlayListModal"
 
 const App = () => {
   const location = useLocation();
