@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import { useAuth } from "../../../context/AuthContext"
 import api from '../../../../services/apiService';
 import Share from '../../../../utils/Share';
+import { formatValue } from '../../../functions';
 
 const ChannelHeader = ({ channel, stats, onAvatarChange, onBannerChange }) => {
   const { user } = useAuth();
+  const [subscribersCount, setSubscribersCount] = useState(channel?.subscribersCount || 0)
   const [isSubscribed, setIsSubscribed] = useState(channel?.isSubscribed);
   const [showAvatarUpload, setShowAvatarUpload] = useState(false);
   const [showBannerUpload, setShowBannerUpload] = useState(false);
@@ -44,6 +46,17 @@ const ChannelHeader = ({ channel, stats, onAvatarChange, onBannerChange }) => {
       reader.readAsDataURL(file);
     }
   };
+
+  const toggleSubscribe = async () => {
+    try {
+      const res = await api.get(`/subscriptions/s/${channel._id}`);
+
+      setSubscribersCount(prev => isSubscribed ? prev - 1 : prev + 1);
+      setIsSubscribed(prev => !prev)
+    } catch (error) {
+      console.log("Error toggling Subscription ::", error)
+    }
+  }
 
   return (
     <div className="bg-white">
@@ -119,7 +132,7 @@ const ChannelHeader = ({ channel, stats, onAvatarChange, onBannerChange }) => {
                 <div className="flex flex-wrap items-center gap-2 mt-1 text-xs sm:text-sm text-gray-600">
                   <span>@{channel.username}</span>
                   <span>•</span>
-                  <span>{channel.subscribersCount || 0} subscribers</span>
+                  <span>{formatValue(subscribersCount)} subscribers</span>
                   <span>•</span>
                   <span>{stats.totalVideos || 0} videos</span>
                   <span>•</span>
@@ -133,8 +146,8 @@ const ChannelHeader = ({ channel, stats, onAvatarChange, onBannerChange }) => {
           <div className="flex items-center gap-2 w-full sm:w-auto">
             {user._id !== channel._id && (
               <button
-                onClick={() => setIsSubscribed(!isSubscribed)}
-                className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-full font-medium transition ${isSubscribed
+                onClick={() => toggleSubscribe()}
+                className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-full font-medium transition cursor-pointer ${isSubscribed
                   ? 'bg-gray-200 hover:bg-gray-300 text-gray-800'
                   : 'bg-blue-600 hover:bg-blue-700 text-white'
                   }`}
