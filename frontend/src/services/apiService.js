@@ -36,6 +36,11 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
+      // If user manually logged out, stop trying to refresh
+      if (!localStorage.getItem("token")) {
+        return Promise.reject(error);
+      }
+
       // prevent looping refresh requests
       if (originalRequest.url.includes("/refresh-token")) {
         return Promise.reject(error);
