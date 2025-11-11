@@ -8,8 +8,6 @@ dotenv.config(
     }
 )
 
-//Test commit
-
 connectDB()
 .then(
     app.listen(process.env.PORT || 8000, () => {
