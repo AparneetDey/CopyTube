@@ -5,6 +5,7 @@ import { useAuth } from "../../../context/AuthContext"
 import api from "../../../../services/apiService"
 import Share from "../../../../utils/Share"
 import { formatDate, formatValue } from "../../../functions"
+import { Link } from "react-router-dom"
 
 export default function VideoInfo({ video }) {
   const { user } = useAuth();
@@ -98,25 +99,27 @@ export default function VideoInfo({ video }) {
 
       {/* Channel Info */}
       <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="shrink-0">
-            {video?.owner?.avatar ? (
-              <img
-                src={video.owner.avatar}
-                alt={video.owner.fullName}
-                className="w-10 h-10 rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                <User className="w-5 h-5 text-gray-600" />
-              </div>
-            )}
+        <Link to={`/channel/${video.owner.username}`}>
+          <div className="flex items-center gap-3">
+            <div className="shrink-0 cursor-pointer">
+              {video?.owner?.avatar ? (
+                <img
+                  src={video.owner.avatar}
+                  alt={video.owner.fullName}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                  <User className="w-5 h-5 text-gray-600" />
+                </div>
+              )}
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 cursor-pointer">{video.owner.fullName || "Unknown"}</h3>
+              <p className="text-sm text-gray-600">{formatValue(subscribersCount)} subscribers</p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-semibold text-gray-900">{video.owner.fullName || "Unknown"}</h3>
-            <p className="text-sm text-gray-600">{formatValue(subscribersCount)} subscribers</p>
-          </div>
-        </div>
+        </Link>
 
         {(user._id !== video.owner._id) && (
           <button

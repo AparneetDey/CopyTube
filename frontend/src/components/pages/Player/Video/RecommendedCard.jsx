@@ -26,9 +26,9 @@ const RecommendedCard = ({ video }) => {
                 <h4 className="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-600">
                     {video.title}
                 </h4>
-                <p className="text-xs text-gray-600 mt-1">{video.channel}</p>
+                <p className="text-xs text-gray-600 mt-1">{video.owner.fullName}</p>
                 <p className="text-xs text-gray-600">
-                    {formatValue(video.views)} • {formatDate(video.createdAt)}
+                    {`${formatValue(video.views)} views`} • {formatDate(video.createdAt)}
                 </p>
             </div>
         </Link>

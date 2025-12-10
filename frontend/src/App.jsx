@@ -14,6 +14,7 @@ import VideoPage from './components/pages/Player/VideoPage';
 import UploadPage from './components/pages/Upload/UploadPage';
 import ChannelPage from "./components/pages/channel/ChannelPage"
 import SaveToPlaylistModal from "./components/playlist-modal/SaveToPlayListModal"
+import PlaylistPage from './components/pages/Playlist/PlaylistPage';
 
 const App = () => {
   const location = useLocation();
@@ -70,6 +71,15 @@ const App = () => {
           element={
             <ProtectedRoute>
               <ChannelPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path='/playlist/:playlistId'
+          element={
+            <ProtectedRoute>
+              <PlaylistPage />
             </ProtectedRoute>
           }
         />

@@ -32,8 +32,6 @@ const generateAccessAndRefreshTokens = async (userId) => {
     }
 }
 
-
-
 //Route Controllers
 const userRegister = asyncHandler(async (req, res) => {
     // Get user details from body
