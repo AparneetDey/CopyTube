@@ -86,9 +86,66 @@ const getPlayListById = asyncHandler(async (req, res) => {
 
     if (!playlistId) throw new ApiError(400, "User Id is Required");
 
-    const playList = await Playlist.find({
-        _id: playlistId
-    });
+    const playList = await Playlist.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(playlistId)
+            }
+        }, 
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner",
+                pipeline: [
+                    {
+                        $project: {
+                            avatar: 1,
+                            fullName: 1,
+                            username: 1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $lookup: {
+                from: "videos",
+                localField: "videos",
+                foreignField: "_id",
+                as: "videos",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "owner",
+                            foreignField: "_id",
+                            as: "owner",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        fullName: 1,
+                                        username: 1
+                                    }
+                                }
+                            ]
+                        }
+                    }, 
+                    {
+                        $project: {
+                            thumbnail: 1,
+                            title: 1,
+                            owner: 1,
+                            duration: 1,
+                            views: 1,
+                            createdAt: 1
+                        }
+                    }
+                ]
+            }
+        }
+    ])
 
     if (!playList) throw new ApiError(500, "Something went wrong while fetching the user's playlist");
 
