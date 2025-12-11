@@ -1,17 +1,32 @@
-import { MoreVertical, Play } from 'lucide-react';
-import React, { useState } from 'react'
+import { Bookmark, MoreVertical, Play, Share2, Trash } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom';
+import { formatDate, formatDuration } from '../../../functions';
+import { handleShare } from '../../../../utils/Share';
+import { usePlayList } from '../../../context/PlayListContext';
 
 // Video Item in Playlist
 function PlaylistVideoItem({ video, index, isPlaying, onPlay, onRemove }) {
-	const [showMenu, setShowMenu] = useState(false);
+	const {handleOpenPlayList} = usePlayList();
+
+	const [isExpanded, setIsExpanded] = useState(false);
+	const dropDownRef = useRef(null);
+
+	useEffect(() => {
+		const handleClickOutSide = (e) => {
+			if (dropDownRef.current && !dropDownRef.current.contains(e.target)) {
+				setIsExpanded(false)
+			}
+		}
+
+		window.addEventListener("mousedown", handleClickOutSide);
+		return () => {
+			window.removeEventListener("mousedown", handleClickOutSide)
+		}
+	}, [])
 
 	return (
-		<div
-			className={`flex gap-1 sm:gap-4 p-2 sm:p-4 hover:bg-gray-50 transition cursor-pointer group ${isPlaying ? 'bg-blue-50' : ''
-				}`}
-			onClick={() => onPlay(video.id)}
-		>
+		<div className={`flex gap-1 sm:gap-4 p-2 sm:p-4 hover:bg-gray-50 transition cursor-pointer group ${isPlaying ? 'bg-blue-50' : ''}`}>
 			{/* Index / Playing Indicator */}
 			<div className="shrink-0 w-3 sm:w-8 flex items-start pt-1">
 				{isPlaying ? (
@@ -36,7 +51,7 @@ function PlaylistVideoItem({ video, index, isPlaying, onPlay, onRemove }) {
 					className="absolute inset-0 w-full h-full object-contain"
 				/>
 				<div className="absolute bottom-2 right-2 bg-black bg-opacity-80 text-white text-xs font-semibold px-1.5 py-0.5 rounded">
-					{video.duration}
+					{formatDuration(video.duration)}
 				</div>
 			</Link>
 
@@ -47,7 +62,7 @@ function PlaylistVideoItem({ video, index, isPlaying, onPlay, onRemove }) {
 				</h4>
 				<p className="text-xs text-gray-600 mt-1">{video.channel}</p>
 				<p className="text-xs text-gray-600">
-					{`${video.views} views`} • {video.uploadedAt}
+					{`${video.views} views`} • {formatDate(video.createdAt)}
 				</p>
 			</Link>
 
@@ -56,33 +71,39 @@ function PlaylistVideoItem({ video, index, isPlaying, onPlay, onRemove }) {
 				<button
 					onClick={(e) => {
 						e.stopPropagation();
-						setShowMenu(!showMenu);
+						setIsExpanded(!isExpanded);
 					}}
-					className="hover:bg-gray-200 rounded-full"
+					className="hover:bg-gray-200 rounded-full w-6 h-6 flex items-center justify-center"
 				>
 					<MoreVertical className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 cursor-pointer" />
 				</button>
 
-				{showMenu && (
-					<div className="absolute right-0 top-10 bg-white rounded-lg shadow-xl py-2 w-48 border border-gray-200 z-10">
-						<button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition">
-							Add to queue
-						</button>
-						<button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition">
-							Save to playlist
-						</button>
-						<button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition">
-							Share
+				{isExpanded && (
+					<div ref={dropDownRef} className="absolute right-0 mt-4 w-48 bg-white rounded-lg shadow-xl py-2 border border-gray-200 z-50">
+						<button
+							onClick={() => handleOpenPlayList(video._id, video.title)}
+							className="px-4 py-3 w-full flex gap-2 items-center cursor-pointer hover:bg-gray-300 transition-all duration-100"
+						>
+							<Bookmark />
+							<p className="text-sm text-gray-500">Save to playlist</p>
 						</button>
 						<button
-							onClick={(e) => {
-								e.stopPropagation();
-								onRemove && onRemove(video.id);
-								setShowMenu(false);
-							}}
-							className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
+							onClick={() => handleShare(
+								video.title, `${window.location.origin}/watch/${video._id}`, video.description
+							)}
+							className="px-4 py-3 flex gap-2 items-center cursor-pointer hover:bg-gray-300 w-full transition-all duration-100"
 						>
-							Remove from playlist
+							<Share2 />
+							<p className="text-sm text-gray-500">Share</p>
+						</button>
+						<button
+							onClick={() => handleShare(
+								video.title, `${window.location.origin}/watch/${video._id}`, video.description
+							)}
+							className="px-4 py-3 flex gap-2 items-center cursor-pointer hover:bg-gray-300 w-full transition-all duration-100"
+						>
+							<Trash />
+							<p className="text-sm text-red-500">Remove</p>
 						</button>
 					</div>
 				)}

@@ -1,9 +1,23 @@
 import { Download, Eye, Globe, MoreVertical, Play, Share2, Shuffle } from 'lucide-react';
 import React, { useState } from 'react'
+import { formatDate } from "../../../functions"
+import { handleShare } from '../../../../utils/Share';
 
 // Playlist Header Component
 function PlaylistHeader({ playlist, onPlayAll, onShuffle }) {
   const [isSubscribed, setIsSubscribed] = useState(false);
+
+  console.log(playlist)
+
+  function getTotalViews(videos) {
+    if (!Array.isArray(videos)) return 0;
+  
+    return videos.reduce((total, video) => {
+      const views = Number(video.views) || 0;  // handles undefined, null, strings
+      return total + views;
+    }, 0);
+  }
+  
 
   return (
     <div className="bg-linear-to-br from-blue-600 to-purple-600 text-white">
@@ -21,7 +35,7 @@ function PlaylistHeader({ playlist, onPlayAll, onShuffle }) {
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-3 right-3 bg-black/80 px-2 py-1 rounded text-xs font-medium">
-                    {playlist.videoCount} videos
+                    {playlist.videos.length || 0} videos
                   </div>
                 </>
               ) : (
@@ -40,18 +54,18 @@ function PlaylistHeader({ playlist, onPlayAll, onShuffle }) {
 
             <div className="flex items-center gap-2 mb-1">
               <img 
-                src={playlist.owner.avatar} 
-                alt={playlist.owner.name}
+                src={playlist.owner[0]?.avatar} 
+                alt={playlist.owner[0]?.fullName}
                 className="w-8 h-8 rounded-full"
               />
-              <span className="font-medium">{playlist.owner.name}</span>
+              <span className="font-medium">{playlist.owner[0]?.fullName}</span>
             </div>
             <div className="flex items-center gap-3 mb-4 text-sm opacity-90">
-              <span>{playlist.videoCount} videos</span>
+              <span>{playlist.videos.length} videos</span>
               <span>•</span>
-              <span>{playlist.totalViews} views</span>
+              <span>{getTotalViews(playlist.videos)} views</span>
               <span>•</span>
-              <span>Updated {playlist.updatedAt}</span>
+              <span>Updated {formatDate(playlist.updatedAt)}</span>
             </div>
 
             <p className="text-sm sm:text-base opacity-90 mb-6 line-clamp-2">
@@ -76,15 +90,14 @@ function PlaylistHeader({ playlist, onPlayAll, onShuffle }) {
                 <span className="hidden sm:inline text-sm sm:text-base">Shuffle</span>
               </button>
 
-              <button className="p-2 sm:p-3 bg-white/20 hover:bg-white/30 rounded-full transition">
+              <button 
+                onClick={() => handleShare(playlist.name, window.location.href, playlist.description)}
+                className="p-2 sm:p-3 bg-white/20 hover:bg-white/30 rounded-full transition cursor-pointer"
+              >
                 <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
 
-              <button className="p-2 sm:p-3 bg-white/20 hover:bg-white/30 rounded-full transition">
-                <Download className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
-
-              <button className="p-2 sm:p-3 bg-white/20 hover:bg-white/30 rounded-full transition">
+              <button className="p-2 sm:p-3 bg-white/20 hover:bg-white/30 rounded-full transition cursor-pointer">
                 <MoreVertical className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
