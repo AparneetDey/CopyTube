@@ -4,10 +4,8 @@ import { formatDate } from "../../../functions"
 import { handleShare } from '../../../../utils/Share';
 
 // Playlist Header Component
-function PlaylistHeader({ playlist, onPlayAll, onShuffle }) {
+function PlaylistHeader({ playlist, onPlayFirst, onShuffle }) {
   const [isSubscribed, setIsSubscribed] = useState(false);
-
-  console.log(playlist)
 
   function getTotalViews(videos) {
     if (!Array.isArray(videos)) return 0;
@@ -75,11 +73,11 @@ function PlaylistHeader({ playlist, onPlayAll, onShuffle }) {
             {/* Action Buttons */}
             <div className="flex flex-wrap items-center gap-3">
               <button
-                onClick={onPlayAll}
+                onClick={onPlayFirst}
                 className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-white text-gray-900 rounded-full font-semibold hover:bg-gray-100 transition"
               >
                 <Play className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" />
-                <span className="text-sm sm:text-base">Play all</span>
+                <span className="text-sm sm:text-base">Play First</span>
               </button>
 
               <button

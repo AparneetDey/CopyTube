@@ -4,11 +4,12 @@ import PlaylistHeader from './components/PlaylistHeader';
 import PlaylistVideoItem from './components/PlaylistVideoItem';
 import LoadingSpinner from "../../loading/LoadingSpinner"
 import api from "../../../services/apiService.js";
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 // Main Playlist Page Component
 export default function PlaylistPage() {
   const { playlistId } = useParams();
+  const navigate = useNavigate();
 
   const [currentPlayingId, setCurrentPlayingId] = useState(null);
   const [playlist, setPlaylist] = useState({});
@@ -36,9 +37,8 @@ export default function PlaylistPage() {
   }, [playlistId, fetchPlaylist])
   
 
-  const handlePlayAll = () => {
-    setCurrentPlayingId(videos[0]?.id);
-    console.log('Playing all videos');
+  const handlePlayFirst = () => {
+    navigate(`/watch/${videos[0]._id}`)
   };
 
   const handleShuffle = () => {
@@ -53,12 +53,14 @@ export default function PlaylistPage() {
     console.log('Playing video:', videoId);
   };
 
-  const handleRemoveVideo = (videoId) => {
-    setVideos(videos.filter(v => v.id !== videoId));
-    if (currentPlayingId === videoId) {
-      setCurrentPlayingId(null);
+  const handleRemoveVideo = async (videoId) => {
+    try {
+      const res = await api.patch(`/playlists/p/remove/${playlistId}/${videoId}`)
+
+      fetchPlaylist();
+    } catch (error) {
+      console.log("Error Removing Video ::", error);
     }
-    console.log('Removed video:', videoId);
   };
 
   if (loading) return <LoadingSpinner />
@@ -67,7 +69,7 @@ export default function PlaylistPage() {
     <div className="min-h-screen bg-gray-50">
       <PlaylistHeader 
         playlist={playlist}
-        onPlayAll={handlePlayAll}
+        onPlayFirst={handlePlayFirst}
         onShuffle={handleShuffle}
       />
 

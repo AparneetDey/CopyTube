@@ -60,7 +60,7 @@ function PlaylistVideoItem({ video, index, isPlaying, onPlay, onRemove }) {
 				<h4 className="text-sm font-semibold text-gray-900 line-clamp-1 group-hover:text-blue-600">
 					{video.title}
 				</h4>
-				<p className="text-xs text-gray-600 mt-1">{video.channel}</p>
+				<p className="text-xs text-gray-600 mt-1">{video.owner[0].fullName}</p>
 				<p className="text-xs text-gray-600">
 					{`${video.views} views`} • {formatDate(video.createdAt)}
 				</p>
@@ -71,7 +71,7 @@ function PlaylistVideoItem({ video, index, isPlaying, onPlay, onRemove }) {
 				<button
 					onClick={(e) => {
 						e.stopPropagation();
-						setIsExpanded(!isExpanded);
+						setIsExpanded(true);
 					}}
 					className="hover:bg-gray-200 rounded-full w-6 h-6 flex items-center justify-center"
 				>
@@ -79,7 +79,7 @@ function PlaylistVideoItem({ video, index, isPlaying, onPlay, onRemove }) {
 				</button>
 
 				{isExpanded && (
-					<div ref={dropDownRef} className="absolute right-0 mt-4 w-48 bg-white rounded-lg shadow-xl py-2 border border-gray-200 z-50">
+					<div ref={dropDownRef} className="absolute right-0 mt-4 w-52 bg-white rounded-lg shadow-xl py-2 border border-gray-200 z-50">
 						<button
 							onClick={() => handleOpenPlayList(video._id, video.title)}
 							className="px-4 py-3 w-full flex gap-2 items-center cursor-pointer hover:bg-gray-300 transition-all duration-100"
@@ -97,13 +97,11 @@ function PlaylistVideoItem({ video, index, isPlaying, onPlay, onRemove }) {
 							<p className="text-sm text-gray-500">Share</p>
 						</button>
 						<button
-							onClick={() => handleShare(
-								video.title, `${window.location.origin}/watch/${video._id}`, video.description
-							)}
+							onClick={() => onRemove(video._id)}
 							className="px-4 py-3 flex gap-2 items-center cursor-pointer hover:bg-gray-300 w-full transition-all duration-100"
 						>
 							<Trash />
-							<p className="text-sm text-red-500">Remove</p>
+							<p className="text-sm text-red-500">Remove from playlist</p>
 						</button>
 					</div>
 				)}
