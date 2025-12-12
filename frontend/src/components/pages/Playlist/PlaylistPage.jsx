@@ -38,26 +38,22 @@ export default function PlaylistPage() {
   
 
   const handlePlayFirst = () => {
-    navigate(`/watch/${videos[0]._id}`)
+    if(videos.length > 0) navigate(`/watch/${videos[0]._id}`)
   };
 
-  const handleShuffle = () => {
-    const shuffled = [...videos].sort(() => Math.random() - 0.5);
-    setVideos(shuffled);
-    setCurrentPlayingId(shuffled[0]?.id);
-    console.log('Shuffling playlist');
-  };
-
-  const handlePlayVideo = (videoId) => {
-    setCurrentPlayingId(videoId);
-    console.log('Playing video:', videoId);
+  const handleRandom = () => {
+    if (videos.length === 0) return;
+    const randomIndex = Math.floor(Math.random() * videos.length);
+    const randomVideo = videos[randomIndex];
+    setCurrentPlayingId(randomVideo._id);
+    navigate(`/watch/${randomVideo._id}`);
   };
 
   const handleRemoveVideo = async (videoId) => {
     try {
       const res = await api.patch(`/playlists/p/remove/${playlistId}/${videoId}`)
 
-      fetchPlaylist();
+      fetchPlaylist(playlistId);
     } catch (error) {
       console.log("Error Removing Video ::", error);
     }
@@ -70,7 +66,7 @@ export default function PlaylistPage() {
       <PlaylistHeader 
         playlist={playlist}
         onPlayFirst={handlePlayFirst}
-        onShuffle={handleShuffle}
+        onRandom={handleRandom}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
@@ -95,7 +91,6 @@ export default function PlaylistPage() {
                 video={video}
                 index={index + 1}
                 isPlaying={currentPlayingId === video._id}
-                onPlay={handlePlayVideo}
                 onRemove={handleRemoveVideo}
               />
             ))}

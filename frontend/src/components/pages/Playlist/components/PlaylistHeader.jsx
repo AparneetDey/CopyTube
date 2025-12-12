@@ -1,21 +1,35 @@
-import { Download, Eye, Globe, MoreVertical, Play, Share2, Shuffle } from 'lucide-react';
-import React, { useState } from 'react'
+import { Download, Eye, Globe, MoreVertical, Pencil, Play, Share2, Shuffle, Trash } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react'
 import { formatDate } from "../../../functions"
 import { handleShare } from '../../../../utils/Share';
 
 // Playlist Header Component
-function PlaylistHeader({ playlist, onPlayFirst, onShuffle }) {
+function PlaylistHeader({ playlist, onPlayFirst, onRandom }) {
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const dropDownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutSide = (e) => {
+      if (dropDownRef.current && !dropDownRef.current.contains(e.target)) {
+        setIsExpanded(false)
+      }
+    }
+
+    window.addEventListener("mousedown", handleClickOutSide);
+    return () => {
+      window.removeEventListener("mousedown", handleClickOutSide)
+    }
+  }, [])
 
   function getTotalViews(videos) {
     if (!Array.isArray(videos)) return 0;
-  
+
     return videos.reduce((total, video) => {
       const views = Number(video.views) || 0;  // handles undefined, null, strings
       return total + views;
     }, 0);
   }
-  
 
   return (
     <div className="bg-linear-to-br from-blue-600 to-purple-600 text-white">
@@ -26,8 +40,8 @@ function PlaylistHeader({ playlist, onPlayFirst, onShuffle }) {
             <div className="relative w-full lg:w-80 aspect-video bg-black/30 rounded-lg overflow-hidden shadow-2xl">
               {playlist.videos && playlist.videos.length > 0 ? (
                 <>
-                  <img 
-                    src={playlist.videos[0].thumbnail} 
+                  <img
+                    src={playlist.videos[0].thumbnail}
                     alt={playlist.name}
                     className="w-full h-full object-cover"
                   />
@@ -51,8 +65,8 @@ function PlaylistHeader({ playlist, onPlayFirst, onShuffle }) {
             </h1>
 
             <div className="flex items-center gap-2 mb-1">
-              <img 
-                src={playlist.owner[0]?.avatar} 
+              <img
+                src={playlist.owner[0]?.avatar}
                 alt={playlist.owner[0]?.fullName}
                 className="w-8 h-8 rounded-full"
               />
@@ -74,30 +88,51 @@ function PlaylistHeader({ playlist, onPlayFirst, onShuffle }) {
             <div className="flex flex-wrap items-center gap-3">
               <button
                 onClick={onPlayFirst}
-                className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-white text-gray-900 rounded-full font-semibold hover:bg-gray-100 transition"
+                className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-white text-gray-900 rounded-full font-semibold hover:bg-gray-100 transition cursor-pointer"
               >
                 <Play className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" />
                 <span className="text-sm sm:text-base">Play First</span>
               </button>
 
               <button
-                onClick={onShuffle}
-                className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-white/20 hover:bg-white/30 rounded-full font-medium transition"
+                onClick={onRandom}
+                className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-white/20 hover:bg-white/30 rounded-full font-medium transition cursor-pointer"
               >
                 <Shuffle className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="hidden sm:inline text-sm sm:text-base">Shuffle</span>
+                <span className="hidden sm:inline text-sm sm:text-base">Random</span>
               </button>
 
-              <button 
+              <button
                 onClick={() => handleShare(playlist.name, window.location.href, playlist.description)}
                 className="p-2 sm:p-3 bg-white/20 hover:bg-white/30 rounded-full transition cursor-pointer"
               >
                 <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
 
-              <button className="p-2 sm:p-3 bg-white/20 hover:bg-white/30 rounded-full transition cursor-pointer">
-                <MoreVertical className="w-4 h-4 sm:w-5 sm:h-5" />
-              </button>
+              <div className='relative'>
+                <button onClick={() => setIsExpanded(true)} className="p-2 sm:p-3 bg-white/20 hover:bg-white/30 rounded-full transition cursor-pointer">
+                  <MoreVertical className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
+                {isExpanded && (
+                  <div ref={dropDownRef} className="absolute text-black right-0 mt-4 w-52 bg-white rounded-lg shadow-xl py-2 border border-gray-200 z-50">
+                    <button
+                      onClick={() => console.log("Delete")}
+                      className="px-4 py-3 flex gap-2 items-center cursor-pointer hover:bg-gray-300 w-full transition-all duration-100"
+                    >
+                      <Pencil />
+                      <p className="text-sm text-gray-500">Edit playlist</p>
+                    </button>
+                    <button
+                      onClick={() => console.log("Delete")}
+                      className="px-4 py-3 flex gap-2 items-center cursor-pointer hover:bg-gray-300 w-full transition-all duration-100"
+                    >
+                      <Trash />
+                      <p className="text-sm text-red-500">Delete playlist</p>
+                    </button>
+                  </div>
+                )}
+              </div>
+
             </div>
           </div>
         </div>

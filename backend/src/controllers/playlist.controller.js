@@ -82,8 +82,6 @@ const getUserPlayLists = asyncHandler(async (req, res) => {
 const getPlayListById = asyncHandler(async (req, res) => {
     const { playlistId } = req.params;
 
-    console.log(playlistId)
-
     if (!playlistId) throw new ApiError(400, "User Id is Required");
 
     const playList = await Playlist.aggregate([
